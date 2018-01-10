@@ -4,7 +4,7 @@ import tensorflow.contrib.slim as slim
 from collections import deque
 
 class cartpole_problem(object):
-    def __init__(self):
+    def __init__(self, max_lifetime=1000):
         self.delta_t = 0.05
         self.gravity = 9.8
         self.force = 1.
@@ -12,6 +12,7 @@ class cartpole_problem(object):
         self.pole_mass = 0.2
         self.mass = self.cart_mass + self.pole_mass
         self.pole_half_length = 1.
+        self.max_lifetime = max_lifetime
 
         self.reset_state()
 
@@ -56,7 +57,7 @@ class cartpole_problem(object):
     def run_trial(self, controller, testing=False):
         self.reset_state()
         i = 0
-        while True:
+        while i < self.max_lifetime:
             i += 1
             this_state = self.get_state()
             this_action = controller.choose_action(this_state)
@@ -197,7 +198,7 @@ class tabular_Q_controller(random_controller):
 
 
 class dqn_controller(random_controller):
-    def __init__(self, epsilon=0.1, gamma=0.95, eta=0.001, nh1=100, nh2=100, replay_buffer=True): 
+    def __init__(self, epsilon=0.1, gamma=0.95, eta=5e-4, nh1=100, nh2=100, replay_buffer=True): 
         """Epsilon: exploration probability (epsilon-greedy)
            gamma: discount factor
            eta: learning rate,
@@ -275,6 +276,18 @@ if __name__ == "__main__":
     cpc = random_controller()
     cpp.run_trial(cpc, testing=True)
 
+    np.random.seed(0)
+    tf.set_random_seed(0)
+    tqc = tabular_Q_controller()
+    tqc.set_testing()
+    cpp.run_trial(tqc, testing=True)
+    tqc.set_training()
+    cpp.run_k_trials(tqc, 10000)
+    tqc.set_testing()
+    cpp.run_trial(tqc, testing=True)
+
+    np.random.seed(0)
+    tf.set_random_seed(0)
     dqn = dqn_controller(replay_buffer=False)
     dqn.set_testing()
     cpp.run_trial(dqn, testing=True)
@@ -283,13 +296,5 @@ if __name__ == "__main__":
         cpp.run_k_trials(dqn, 1000)
         dqn.set_testing()
         cpp.run_trial(dqn, testing=True)
-    exit() 
-    tqc = tabular_Q_controller()
-    tqc.set_testing()
-    cpp.run_trial(tqc, testing=True)
-    tqc.set_training()
-    cpp.run_k_trials(tqc, 10000)
-    tqc.set_testing()
-    cpp.run_trial(tqc, testing=True)
 
 
