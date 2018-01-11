@@ -4,6 +4,8 @@ import tensorflow.contrib.slim as slim
 from collections import deque
 
 class cartpole_problem(object):
+    """Class implementing the cartpole world -- you may want to glance at the
+       methods to see if you can understand what's going on."""
     def __init__(self, max_lifetime=1000):
         self.delta_t = 0.05
         self.gravity = 9.8
@@ -134,7 +136,7 @@ class tabular_Q_controller(random_controller):
 
     def discretize_state(self, state):
         """Convert continuous state into discrete with 3 possible values of each
-           parameter"""
+           position, 5 possible values of each derivative."""
         x, x_dot, phi, phi_dot = state
         if x > 1.:
             x = 1
@@ -198,7 +200,10 @@ class tabular_Q_controller(random_controller):
 
 
 class dqn_controller(random_controller):
-    def __init__(self, epsilon=0.1, gamma=0.95, eta=5e-4, nh1=100, nh2=100, replay_buffer=True): 
+    """Simple deep-Q network controller -- 4 inputs (one for each state
+       variable), two hidden layers, two outputs (Q-left, Q-right), and an
+       optional replay buffer."""
+    def __init__(self, epsilon=0.05, gamma=0.95, eta=1e-4, nh1=100, nh2=100, replay_buffer=True): 
         """Epsilon: exploration probability (epsilon-greedy)
            gamma: discount factor
            eta: learning rate,
@@ -224,7 +229,7 @@ class dqn_controller(random_controller):
 
         self.target =  tf.placeholder(tf.float32, [1, 2])
         self.loss = tf.nn.l2_loss(self.Q_vals - self.target)
-        optimizer = tf.train.AdamOptimizer(self.eta)
+        optimizer = tf.train.AdamOptimizer(self.eta, epsilon=1e-3)
         self.train = optimizer.minimize(self.loss)
 
         self.sess = tf.Session()
@@ -244,10 +249,14 @@ class dqn_controller(random_controller):
     def update(self, prev_state, action, new_state, reward):
         """Update policy or whatever, override."""
         if self.replay_buffer is not None:
+            # put this (S, A, S, R) tuple in buffer
             self.replay_buffer.append((prev_state, action, new_state, reward))
-            (prev_state, action, new_state,reward) = numpy.random.choice(replay_buffer) 
+            rb_len = len(self.replay_buffer)
+            # pick a random (S, A, S, R) tuple from buffer
+            (prev_state, action, new_state,reward) = self.replay_buffer[np.random.randint(0, rb_len)]
 
-            if len(self.replay_buffer) > self.replay_buffer_max_size:
+            # remove a memory if getting too full
+            if rb_len > self.replay_buffer_max_size:
                 self.replay_buffer.popleft()
 
         if reward != 0.:
@@ -270,28 +279,27 @@ class dqn_controller(random_controller):
 
 if __name__ == "__main__":
     np.random.seed(0)
-    tf.set_random_seed(0)
     cpp = cartpole_problem()
 
     cpc = random_controller()
     cpp.run_trial(cpc, testing=True)
 
     np.random.seed(0)
-    tf.set_random_seed(0)
     tqc = tabular_Q_controller()
     tqc.set_testing()
     cpp.run_trial(tqc, testing=True)
-    tqc.set_training()
-    cpp.run_k_trials(tqc, 10000)
-    tqc.set_testing()
-    cpp.run_trial(tqc, testing=True)
+    for i in range(5):
+        tqc.set_training()
+        cpp.run_k_trials(tqc, 1000)
+        tqc.set_testing()
+        cpp.run_trial(tqc, testing=True)
 
     np.random.seed(0)
     tf.set_random_seed(0)
-    dqn = dqn_controller(replay_buffer=False)
+    dqn = dqn_controller(replay_buffer=True)
     dqn.set_testing()
     cpp.run_trial(dqn, testing=True)
-    for i in range(10):
+    for i in range(8):
         dqn.set_training()
         cpp.run_k_trials(dqn, 1000)
         dqn.set_testing()
