@@ -1,0 +1,89 @@
+\documentclass{beamer}
+\usepackage{pgfpages}
+%\setbeameroption{show notes on second screen=left} %enable for notes
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\lstset{language=python,frame=single}
+\usepackage{verbatim}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{relsize}
+\usepackage{appendixnumberbeamer}
+\usepackage{xparse}
+\usepackage{multimedia}
+\usepackage{tikz}
+\usetikzlibrary{matrix,backgrounds}
+\pgfdeclarelayer{myback}
+\pgfsetlayers{myback,background,main}
+
+\tikzset{mycolor/.style = {line width=1bp,color=#1}}%
+\tikzset{myfillcolor/.style = {draw,fill=#1}}%
+
+\NewDocumentCommand{\highlight}{O{blue!40} m m}{%
+\draw[mycolor=#1,rounded corners] (#2.north west)rectangle (#3.south east);
+}
+
+\NewDocumentCommand{\fhighlight}{O{blue!40} m m}{%
+\draw[myfillcolor=#1,rounded corners] (#2.north west)rectangle (#3.south east);
+}
+
+\usetheme[numbering=fraction, background=dark]{metropolis}
+%%\AtBeginSection[]
+%%{
+%%  \begin{frame}
+%%    \frametitle{Table of Contents}
+%%    \tableofcontents[currentsection]
+%%  \end{frame}
+%%}
+
+%%\let\olditem\item
+%%\renewcommand{\item}{\vspace{0.5\baselineskip}\olditem}
+\begin{document}
+
+\title{Reinforcement Learning 1}
+\author{Andrew Lampinen}
+\date{Psych 209, Winter 2018}
+\frame{\titlepage}
+
+
+\section{Introduction}
+\begin{frame}{Chess}
+\begin{columns}
+\column{0.5\textwidth}
+\begin{itemize}
+    \item<1-> You're playing chess against Magnus Carlsen. How can you learn?
+    \item<2-> It's not supervised, nobody is telling you what the right move was.
+    \item<3-> Really the only definite signal you get is the game outcome.
+    \item<4-> ... but have you ever had the feeling of ``Oh, f***'' after your opponent makes a move you didn't see?
+\end{itemize}
+\column{0.5\textwidth}
+    \begin{center}
+    \includegraphics[width = \textwidth]{figures/chess.jpg}
+    \end{center}
+\end{columns}
+\note{How do you think we do it? Well, sometimes you make a move, and then Magnus moves, and then you're like OH I DIDN'T SEE THAT MY POSITION IS MUCH WORSE THAN I THOUGHT.}
+\end{frame}
+
+\begin{frame}{TD Learning}
+\begin{itemize}
+    \item<1-> Temporal Difference (TD) learning is a formal framework for learning from surprises. 
+    \item<2-> Basic idea: keep a prediction about how things will go, and when you're suprised, revise it. 
+    \item<3-> If Magnus surprises you with a forced checkmate, you should definitely revise your understanding of the previous position.
+    \item<4-> What exactly are we predicting? 
+    \begin{itemize}
+        \item<5-> Simple approach: the \emph{value} of every position.
+        \item<6-> If we have to re-evaluate a position, we can update our earlier prediction(s).
+    \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{TD Learning in the brain}
+    \begin{center}
+    \includegraphics[height = 0.9\textheight]{figures/dopamine_TD.png}
+    \end{center}
+    {\tiny Schultz et al., 1997}
+\end{frame}
+
+\end{document}
