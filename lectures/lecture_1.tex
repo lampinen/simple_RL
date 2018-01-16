@@ -20,6 +20,8 @@
 
 \tikzset{mycolor/.style = {line width=1bp,color=#1}}%
 \tikzset{myfillcolor/.style = {draw,fill=#1}}%
+\tikzstyle{line} = [draw, line width=1pt]
+\tikzstyle{arrow} = [draw, line width=1pt, ->]
 
 \NewDocumentCommand{\highlight}{O{blue!40} m m}{%
 \draw[mycolor=#1,rounded corners] (#2.north west)rectangle (#3.south east);
@@ -30,25 +32,63 @@
 }
 
 \usetheme[numbering=fraction, background=dark]{metropolis}
-%%\AtBeginSection[]
-%%{
-%%  \begin{frame}
-%%    \frametitle{Table of Contents}
-%%    \tableofcontents[currentsection]
-%%  \end{frame}
-%%}
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Table of Contents}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
 
 %%\let\olditem\item
 %%\renewcommand{\item}{\vspace{0.5\baselineskip}\olditem}
 \begin{document}
 
 \title{Reinforcement Learning 1}
+\subtitle{MDPs, TD Learning, Q-learning}
 \author{Andrew Lampinen}
 \date{Psych 209, Winter 2018}
 \frame{\titlepage}
 
 
 \section{Introduction}
+\begin{frame}{Plan for these lectures}
+\begin{itemize}
+    \item What do the following have in common?
+    \begin{center}
+        \includegraphics[width=0.3\textwidth]{figures/walkingbaby.jpg}~
+        \includegraphics[width=0.3\textwidth]{figures/selfdrivingcar.jpg}~
+        \includegraphics[width=0.3\textwidth]{figures/playingchess.jpg}
+    \end{center}
+    \item<2-> ... potentially many features in common:
+    \begin{itemize} 
+        \item<3-> Similar structure: states, actions, occasional rewards. We'll discuss a unified formal framework for many tasks like this. 
+        \item<4-> They're not directly supervised -- nobody tells you \textbf{exactly} the right answer. We'll discuss how to learn tasks like this. 
+    \end{itemize}
+    
+\end{itemize}
+\end{frame}
+
+\section{Formalizing tasks: MDPs}
+\begin{frame}{Markov Decision Processes (MDPs)}
+\begin{figure}
+\centering
+\begin{tikzpicture}[auto]
+    \node at (0, 0) (A) {Agent};
+    \uncover<2-> {
+        \node at (0, -2) (E) {Environment};
+    }
+    \uncover<3->{
+        \path [arrow] (E.east) to [in=0,out=45] node [opacity=0.5, xshift=50pt] {\small perceives} (A.east); 
+    }
+    \uncover<4->{
+        \path [arrow] (A.west) to [in=135,out=180] node [opacity=0.5, xshift=-40pt] {\small acts on} (E.west); 
+    }
+\end{tikzpicture}
+\end{figure}
+\end{frame}
+
+\section{TD Learning}
 \begin{frame}{Chess}
 \begin{columns}
 \column{0.5\textwidth}
@@ -66,7 +106,7 @@
 \note{How do you think we do it? Well, sometimes you make a move, and then Magnus moves, and then you're like OH I DIDN'T SEE THAT MY POSITION IS MUCH WORSE THAN I THOUGHT.}
 \end{frame}
 
-\begin{frame}{TD Learning}
+\begin{frame}{TD Learning (applied to chess)}
 \begin{itemize}
     \item<1-> Temporal Difference (TD) learning is a formal framework for learning from surprises. 
     \item<2-> Basic idea: keep a prediction about how things will go, and when you're suprised, revise it. 
@@ -79,11 +119,17 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}{TD Learning in the brain}
-    \begin{center}
-    \includegraphics[height = 0.9\textheight]{figures/dopamine_TD.png}
-    \end{center}
-    {\tiny Schultz et al., 1997}
+\begin{frame}{TD Learning (in the brain)}
+
+\begin{center}
+\includegraphics[height = 0.9\textheight]{figures/dopamine_TD.png}
+\end{center}
 \end{frame}
+
+\begin{frame}{TD Learning: Formalism}
+\end{frame}
+
+\section{Q-learning}
+
 
 \end{document}
