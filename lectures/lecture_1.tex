@@ -74,18 +74,48 @@
 \begin{figure}
 \centering
 \begin{tikzpicture}[auto]
-    \node at (0, 0) (A) {Agent};
-    \uncover<2-> {
-        \node at (0, -2) (E) {Environment};
+    \uncover<1-5>{
+        \node at (0, 0) (A) {Agent};
     }
-    \uncover<3->{
-        \path [arrow] (E.east) to [in=0,out=45] node [opacity=0.5, xshift=50pt] {\small perceives} (A.east); 
+    \uncover<2-5> {
+        \node at (0, -3) (E) {Environment};
     }
-    \uncover<4->{
-        \path [arrow] (A.west) to [in=135,out=180] node [opacity=0.5, xshift=-40pt] {\small acts on} (E.west); 
+    \uncover<3-5>{
+        \path [arrow] (E.west) to [in=180,out=135] node [opacity=0.5, xshift=5pt, yshift=-20pt, text width=40pt] {\small shows state to} (A.west); 
+    }
+    \uncover<4-5>{
+        \path [arrow] ([xshift=10pt]A.south) to [in=45,out=-45] node [opacity=0.5, xshift=-40pt] {\small acts on} ([xshift=10pt]E.north); 
+    }
+    \uncover<5>{
+        \path [arrow] (E.east) to [in=0,out=45] node [opacity=0.5, xshift=50pt, yshift=15pt, text width=40pt] {\small rewards} (A.east); 
+    }
+    \uncover<6> {
+        \node [text width=35pt, align=center] at (-2.5, 0) (A) {Agent (\(t=0\))};
+        \node [text width=60pt, align=center] at (-2.5, -3) (E) {Environment (\(t=0\))};
+        \path [arrow] ([yshift=10pt]E.west) to [in=180,out=135] node [opacity=0.5, xshift=5pt, yshift=-20pt, text width=40pt] {\small shows state to} ([yshift=10pt]A.west); 
+        \node [text width=35pt, align=center] at (2.5, 0) (A1) {Agent (\(t=1\))};
+        \node [text width=60pt, align=center] at (2.5, -3) (E1) {Environment (\(t=1\))};
+        \path [arrow] ([yshift=10pt]E1.west) to [in=180,out=135] node [opacity=0.5, xshift=5pt, yshift=-20pt, text width=40pt] {\small shows state to} ([yshift=10pt]A1.west); 
+        \node [text width=35pt, align=center] at (7.5, 0) (A2) {Agent (\(t=2\))};
+        \node [text width=60pt, align=center] at (7.5, -3) (E2) {Environment (\(t=2\))};
+%        \path [arrow] (E.west) to [in=180,out=135] node [opacity=0.5, xshift=50pt, yshift=6pt, text width=40pt] {\small shows state to} (A.west); 
+%        \path [arrow] (A.west) to [in=135,out=180] node [opacity=0.5, xshift=-40pt] {\small acts on} (E.west); 
+%        \path [arrow] ([xshift=10pt]E.north) to [in=-45,out=45] node [opacity=0.5, xshift=8pt, text width=40pt] {\small gives rewards to} ([xshift=10pt]A.south); 
     }
 \end{tikzpicture}
 \end{figure}
+\end{frame}
+
+\begin{frame}{Agents \& actions}
+
+\end{frame}
+
+\begin{frame}{Environments \& states}
+
+\note{Sometimes the ``environment'' may include things you intuitively think of as part of the agent, e.g. in the car example the agent would just be the computer, the rest of the car (wheels, etc) would be part of the environment} 
+\end{frame}
+
+\begin{frame}{Time \& rewards}
 \end{frame}
 
 \section{TD Learning}
