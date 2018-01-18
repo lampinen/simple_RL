@@ -32,13 +32,13 @@
 }
 
 \usetheme[numbering=fraction, background=dark]{metropolis}
-\AtBeginSection[]
-{
-  \begin{frame}
-    \frametitle{Table of Contents}
-    \tableofcontents[currentsection]
-  \end{frame}
-}
+%%\AtBeginSection[]
+%%{
+%%  \begin{frame}
+%%    \frametitle{Table of Contents}
+%%    \tableofcontents[currentsection]
+%%  \end{frame}
+%%}
 
 %%\let\olditem\item
 %%\renewcommand{\item}{\vspace{0.5\baselineskip}\olditem}
@@ -195,21 +195,32 @@ Questions?
 
 \begin{frame}{Value functions} 
 \begin{itemize}
-\item A natural way to define ``best'' is based on expected return (which we call \textbf{value}). 
-    \[V\onslide<3->{^\pi}(s) = \E{\text{Return} \, |\, s} = \E{\sum_{t=1}^\infty } \]
-\item But  
+\item A natural way to define ``best'' states is based on expected return (which we call \textbf{value}). 
+    \[V^\pi(s) = \E{\text{Return} \, |\, s} = \E{\sum_{t=1}^\infty \gamma^t r_t \, \bigg \vert \, s } \]
+\item<2-> Expectation because this depends on the environment's transistions and rewards, which may be random.  
+\item<3-> But this also depends on the policy! (That's why it's \(V^{\color{red} \pi}\).) 
+\end{itemize}
+\note{expectation of random policy playing chess against me is pretty much always losing, expectation of stockfish's policy is always winning}
+\end{frame}
+
+\begin{frame}{Optimality}
+\begin{itemize}
+\item Now we can define the \textbf{best} policy as the one that gets the \textbf{best} expected return from every state.
+\item<2-> We'll denote it by \(\pi^*\) and the associated value function by \(V^*\) or \(V^{\pi^*}\). 
+\item<3-> It is a theorem that any problem that can be specified as an MDP has at least one optimal policy.
+\item<4-> But how can we try to find \(\pi^*\) or \(V^*\)?
 \end{itemize}
 \end{frame}
 
-\subsection{TD Learning}
+
+\section{TD Learning and iteration}
 \begin{frame}{Chess}
 \begin{columns}
 \column{0.5\textwidth}
 \begin{itemize}
-    \item<1-> You're playing chess against Magnus Carlsen. How can you learn?
-    \item<2-> Again, it's not supervised, nobody is telling you what the right move was.
-    \item<3-> Really the only definite signal you get is the game outcome.
-    \item<4-> ... but have you ever had the feeling of ``Oh, f***'' after your opponent makes a move you didn't see?
+    \item<1-> You're playing chess against Magnus Carlsen. Let's say you estimate that you're doing pretty well, that is \(V^{\pi}(s_t)\) is reasonably high. 
+    \item<2-> ... but then he makes a move you don't expect, and you realize you're doing worse than you thought, so \(V^{\pi}(s_{t+1})\) is smaller.
+    \item<3-> Can we learn from this difference?
 \end{itemize}
 \column{0.5\textwidth}
     \begin{center}
@@ -222,13 +233,11 @@ Questions?
 \begin{frame}{TD Learning (applied to chess)}
 \begin{itemize}
     \item<1-> Temporal Difference (TD) learning is a formal framework for learning from surprises. 
-    \item<2-> Basic idea: keep a prediction about how things will go, and when you're suprised, revise it. 
-    \item<3-> If Magnus surprises you with a forced checkmate, you should definitely revise your understanding of the previous position.
-    \item<4-> What exactly are we predicting? 
-    \begin{itemize}
-        \item<5-> Simple approach: the \emph{value} of every position.
-        \item<6-> If we have to re-evaluate a position, we can update our earlier prediction(s).
-    \end{itemize}
+    \item<2-> For \emph{any} value function, we should have that
+        \[V^{\pi}(s_{t}) = r_{t+1} + \gamma V^{\pi}(s_{t+1})\] 
+    \item<3-> So let's try to make this more true, 
+        \[V^{\pi}(s) = V^{\pi}(s) + \alpha \underbrace{\left( r_{t+1} + \gamma V^{\pi}(s_{t+1}) - V(s)\right)}_{\text{prediction error!}}, \quad \alpha \in [0, 1]\]
+    \item<4-> This type of update is called \emph{value iteration}, and is guaranteed to converge to the true value function for a policy under certain conditions.
 \end{itemize}
 \end{frame}
 
@@ -239,10 +248,38 @@ Questions?
 \end{center}
 \end{frame}
 
-\begin{frame}{TD Learning: Formalism}
+\begin{frame}{Actions}
+\begin{columns}
+\column{0.5\textwidth}
+\begin{itemize}
+    \item<1-> But even if we have the optimal value function, how do we choose actions? 
+    \item<2-> In chess, it's easy -- just look at the next position after you move, and figure out which one has the max value.
+    \item<3-> But what about in more complicated situations, where we don't know how the environment will change after our actions?
+\end{itemize}
+\column{0.5\textwidth}
+    \begin{center}
+    \only<1-2>{
+        \includegraphics[width = \textwidth]{figures/chess.jpg}
+    }
+    \only<3->{
+        \includegraphics[width = \textwidth]{figures/selfdrivingcar.jpg}
+    }
+    \end{center}
+\end{columns}
 \end{frame}
 
-\subsection{Q-learning}
+\section{Q-learning}
+
+
+\begin{frame}{Q-values}
+\begin{itemize}
+\item The solution we'll take is to incorporate the action into our values by estimating the \emph{value of an action in a state}, which we'll denote by \(Q(s,a)\):
+    \[Q^\pi(s,a) = \E{\text{Return} \, |\, s, a} = \E{\sum_{t=1}^\infty \gamma^t r_t \, \bigg \vert \, s, a } \]
+\item<2-> Notice that this contains the value function from before:
+    \[V^\pi(s) = \sum_{a \in A(s)} p(a | s, \pi) Q^{\pi} (s, a)\]
+\item<3-> But it also gives us ways of picking policies, e.g. pick the action with the highest \(Q\).
+\end{itemize}
+\end{frame}
 
 
 \end{document}
