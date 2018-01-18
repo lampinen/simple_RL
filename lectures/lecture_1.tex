@@ -129,8 +129,8 @@
 \column{0.5\textwidth}
 Agents:
 \begin{itemize}
-    \item At each time step \(t\), perceives the \textbf{state} (\(s_t\)) takes an \textbf{action} (\(a_t\)) from the set of actions available in that state (\(A(s_t)\)).
-    \item<2-> E.g. press gas, brake, turn wheel left 0.57 radians, press gas + turn right, shift to 4th gear, ...
+    \item At each time step \(t\), perceives the \textbf{state}, \(s_t\) decides on an \textbf{action}, \(a_t\) from the set of actions available in that state, \(A(s_t)\).
+    \item<2-> E.g. press gas, brake, turn wheel left 0.57 radians, press gas + turn right 2.2 radians, shift to 4th gear, ...
 \end{itemize}
 \column{0.5\textwidth}
     \begin{center}
@@ -146,26 +146,28 @@ Environment:
 \begin{itemize}
     \item Includes other cars (and also parts of self).
     \item<2-> Is in a state \(s_t\). 
-    \item<3-> After the agent takes \(a_t\), evolves to state \(s_{t+1} \in S\) according to its \textbf{transition probabilities}: \(p(s_{t+1} | s_t, a_t)\).
-    \item<4-> \textbf{Markov:} transition probabilities depend \emph{only} on the listed values, \emph{not} history. 
+    \item<3-> After the agent takes \(a_t\), evolves to state \(s_{t+1} \in S\) according to the \textbf{transition probabilities}: \(p(s_{t+1} | s_t, a_t)\).
+    \item<4-> \textbf{Markov:} transition probabilities depend \emph{only} on \(s_t, a_t\), not history. 
 \end{itemize}
 \column{0.5\textwidth}
     \begin{center}
     \includegraphics[width = \textwidth]{figures/citystreet.jpg}
     \end{center}
 \end{columns}
-\note{Sometimes the ``environment'' may include things you intuitively think of as part of the agent, e.g. in the car example the agent would just be the computer, the rest of the car (wheels, etc) would be part of the environment} 
+\note{Sometimes the ``environment'' may include things you intuitively think of as part of the agent, e.g. in the car example the agent would just be the computer, the rest of the car (wheels, etc) would be part of the environment.
+
+So if you're in a state, it doesn't matter how you got to that state} 
 \end{frame}
 
 
 \begin{frame}{Time, \& rewards}
 \begin{columns}
 \column{0.5\textwidth}
-Environment:
+Rewards:
 \begin{itemize}
-    \item Agent receives a \textbf{reward} \(r_{t+1} \in R\) according to environment's \textbf{reward probabilities}: \(p(r_{t+1} | s_t, a_t, s_{t+1})\). 
-    \item<2-> E.g. fare for bringing a rider to their destination, very negative reward for running over a pedestrian, ...
-    TODO: process
+    \item Agent receives a \textbf{reward} \(r_{t+1} \in R\) according to \textbf{reward probabilities}: \(p(r_{t+1} | s_t, a_t, s_{t+1})\). 
+    \item<2-> E.g. fare for reaching a destination, penalty for hitting a pedestrian, ...
+    \item<3-> \textbf{Return} is the sum of the \textbf{discounted} rewards over time: \(\sum_{t=1}^\infty \gamma^t r_t\) for some \(\gamma \in (0, 1]\).
 \end{itemize}
 \column{0.5\textwidth}
     \begin{center}
@@ -175,10 +177,11 @@ Environment:
 \end{frame}
 
 \begin{frame}[standout]
-Questions on MDPs?
+Questions?
 \end{frame}
 
-\section{TD Learning}
+\section{Learning in MDPs}
+\subsection{TD Learning}
 \begin{frame}{Chess}
 \begin{columns}
 \column{0.5\textwidth}
@@ -219,7 +222,7 @@ Questions on MDPs?
 \begin{frame}{TD Learning: Formalism}
 \end{frame}
 
-\section{Q-learning}
+\subsection{Q-learning}
 
 
 \end{document}
