@@ -42,10 +42,12 @@
 
 %%\let\olditem\item
 %%\renewcommand{\item}{\vspace{0.5\baselineskip}\olditem}
+
+\newcommand{\E}[1]{\mathbb{E}\left[#1\right]}
 \begin{document}
 
 \title{Reinforcement Learning 1}
-\subtitle{MDPs, TD Learning, Q-learning}
+\subtitle{MDPs, policies, values, TD learning, and Q-learning}
 \author{Andrew Lampinen}
 \date{Psych 209, Winter 2018}
 \frame{\titlepage}
@@ -181,13 +183,31 @@ Questions?
 \end{frame}
 
 \section{Learning in MDPs}
+\begin{frame}{Policies}
+\begin{itemize}
+\item How does the agent decide what to do?
+\item<2-> By using a \textbf{policy} \(\pi\) which maps states to actions.
+\item<3-> This policy could take many forms: picking randomly, a set of rules, a table, a neural network, or some combination thereof.
+\item<4-> Ideally, you would want your policy to pick the best action in every state, but what does ``best'' mean?
+\end{itemize}
+\note{In the case of the car, part of the policy might be ``if you see a pedestrian in front of you, stop, if you can't stop, swerve.'' This might either be implicit or explicit.}
+\end{frame}
+
+\begin{frame}{Value functions} 
+\begin{itemize}
+\item A natural way to define ``best'' is based on expected return (which we call \textbf{value}). 
+    \[V\onslide<3->{^\pi}(s) = \E{\text{Return} \, |\, s} = \E{\sum_{t=1}^\infty } \]
+\item But  
+\end{itemize}
+\end{frame}
+
 \subsection{TD Learning}
 \begin{frame}{Chess}
 \begin{columns}
 \column{0.5\textwidth}
 \begin{itemize}
     \item<1-> You're playing chess against Magnus Carlsen. How can you learn?
-    \item<2-> It's not supervised, nobody is telling you what the right move was.
+    \item<2-> Again, it's not supervised, nobody is telling you what the right move was.
     \item<3-> Really the only definite signal you get is the game outcome.
     \item<4-> ... but have you ever had the feeling of ``Oh, f***'' after your opponent makes a move you didn't see?
 \end{itemize}
