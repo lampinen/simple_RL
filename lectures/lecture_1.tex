@@ -81,41 +81,101 @@
         \node at (0, -3) (E) {Environment};
     }
     \uncover<3-5>{
-        \path [arrow] (E.west) to [in=180,out=135] node [opacity=0.5, xshift=5pt, yshift=-20pt, text width=40pt] {\small shows state to} (A.west); 
+        \path [arrow] (E.west) to [in=180,out=135] node [opacity=0.5, xshift=5pt, yshift=-25pt, text width=40pt] {\small shows state to} (A.west); 
     }
     \uncover<4-5>{
-        \path [arrow] ([xshift=10pt]A.south) to [in=45,out=-45] node [opacity=0.5, xshift=-40pt] {\small acts on} ([xshift=10pt]E.north); 
+        \path [arrow] (A.south) to  node [opacity=0.5, text width=30pt] {\small acts on} (E.north); 
     }
     \uncover<5>{
-        \path [arrow] (E.east) to [in=0,out=45] node [opacity=0.5, xshift=50pt, yshift=15pt, text width=40pt] {\small rewards} (A.east); 
+        \path [arrow] (E.east) to [in=0,out=45] node [opacity=0.5, xshift=50pt, text width=40pt] {\small rewards} (A.east); 
     }
-    \uncover<6> {
+    \uncover<6-> {
         \node [text width=35pt, align=center] at (-2.5, 0) (A) {Agent (\(t=0\))};
         \node [text width=60pt, align=center] at (-2.5, -3) (E) {Environment (\(t=0\))};
+    }
+    \uncover<7->{
         \path [arrow] ([yshift=10pt]E.west) to [in=180,out=135] node [opacity=0.5, xshift=5pt, yshift=-20pt, text width=40pt] {\small shows state to} ([yshift=10pt]A.west); 
+    }
+
+    \uncover<8->{ 
+        \path [arrow] (A.south) to  node [opacity=0.5, xshift=-40pt] {\small acts on} (E.north); 
+    }
+
+    \uncover<9->{
         \node [text width=35pt, align=center] at (2.5, 0) (A1) {Agent (\(t=1\))};
         \node [text width=60pt, align=center] at (2.5, -3) (E1) {Environment (\(t=1\))};
-        \path [arrow] ([yshift=10pt]E1.west) to [in=180,out=135] node [opacity=0.5, xshift=5pt, yshift=-20pt, text width=40pt] {\small shows state to} ([yshift=10pt]A1.west); 
-        \node [text width=35pt, align=center] at (7.5, 0) (A2) {Agent (\(t=2\))};
-        \node [text width=60pt, align=center] at (7.5, -3) (E2) {Environment (\(t=2\))};
-%        \path [arrow] (E.west) to [in=180,out=135] node [opacity=0.5, xshift=50pt, yshift=6pt, text width=40pt] {\small shows state to} (A.west); 
-%        \path [arrow] (A.west) to [in=135,out=180] node [opacity=0.5, xshift=-40pt] {\small acts on} (E.west); 
-%        \path [arrow] ([xshift=10pt]E.north) to [in=-45,out=45] node [opacity=0.5, xshift=8pt, text width=40pt] {\small gives rewards to} ([xshift=10pt]A.south); 
+    }
+    \uncover<10->{
+        \path [arrow] ([yshift=8pt]E.east) to node [opacity=0.5] {\small evolves to} ([yshift=8pt]E1.west); 
+    }
+    \uncover<11->{
+        \path [arrow] ([yshift=10pt]E1.west) to [in=180,out=135] node [opacity=0.5, xshift=5pt, yshift=-20pt, text width=40pt] {\small state \& reward} ([yshift=10pt]A1.west); 
+    }
+
+    \uncover<12->{ 
+        \path [arrow] (A1.south) to  node [opacity=0.5, xshift=-40pt] {\small acts on} (E1.north); 
+    }
+    \uncover<13>{
+        %%\node [text width=35pt, align=center] at (7.5, 0) (A2) {Agent (\(t=2\))};
+        \node  at (5, -3) (E2) {};
+        \path [arrow] ([yshift=8pt]E1.east) to node [opacity=0.5] {\small ...} ([yshift=8pt]E2.west); 
     }
 \end{tikzpicture}
 \end{figure}
 \end{frame}
 
 \begin{frame}{Agents \& actions}
-
+\begin{columns}
+\column{0.5\textwidth}
+Agents:
+\begin{itemize}
+    \item At each time step \(t\), perceives the \textbf{state} (\(s_t\)) takes an \textbf{action} (\(a_t\)) from the set of actions available in that state (\(A(s_t)\)).
+    \item<2-> E.g. press gas, brake, turn wheel left 0.57 radians, press gas + turn right, shift to 4th gear, ...
+\end{itemize}
+\column{0.5\textwidth}
+    \begin{center}
+    \includegraphics[width = \textwidth]{figures/selfdrivingcar.jpg}
+    \end{center}
+\end{columns}
 \end{frame}
 
-\begin{frame}{Environments \& states}
-
+\begin{frame}{Environments, states \& transitions}
+\begin{columns}
+\column{0.5\textwidth}
+Environment:
+\begin{itemize}
+    \item Includes other cars (and also parts of self).
+    \item<2-> Is in a state \(s_t\). 
+    \item<3-> After the agent takes \(a_t\), evolves to state \(s_{t+1} \in S\) according to its \textbf{transition probabilities}: \(p(s_{t+1} | s_t, a_t)\).
+    \item<4-> \textbf{Markov:} transition probabilities depend \emph{only} on the listed values, \emph{not} history. 
+\end{itemize}
+\column{0.5\textwidth}
+    \begin{center}
+    \includegraphics[width = \textwidth]{figures/citystreet.jpg}
+    \end{center}
+\end{columns}
 \note{Sometimes the ``environment'' may include things you intuitively think of as part of the agent, e.g. in the car example the agent would just be the computer, the rest of the car (wheels, etc) would be part of the environment} 
 \end{frame}
 
-\begin{frame}{Time \& rewards}
+
+\begin{frame}{Time, \& rewards}
+\begin{columns}
+\column{0.5\textwidth}
+Environment:
+\begin{itemize}
+    \item Agent receives a \textbf{reward} \(r_{t+1} \in R\) according to environment's \textbf{reward probabilities}: \(p(r_{t+1} | s_t, a_t, s_{t+1})\). 
+    \item<2-> E.g. fare for bringing a rider to their destination, very negative reward for running over a pedestrian, ...
+    TODO: process
+\end{itemize}
+\column{0.5\textwidth}
+    \begin{center}
+    \includegraphics[width = \textwidth]{figures/money.png}
+    \end{center}
+\end{columns}
+\end{frame}
+
+\begin{frame}[standout]
+Questions on MDPs?
 \end{frame}
 
 \section{TD Learning}
