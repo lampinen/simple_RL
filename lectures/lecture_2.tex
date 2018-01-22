@@ -1,0 +1,73 @@
+\documentclass{beamer}
+\usepackage{pgfpages}
+%\setbeameroption{show notes on second screen=left} %enable for notes
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\lstset{language=python,frame=single}
+\usepackage{verbatim}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{relsize}
+\usepackage{appendixnumberbeamer}
+\usepackage{xparse}
+\usepackage{multimedia}
+\usepackage{tikz}
+\usetikzlibrary{matrix,backgrounds}
+\pgfdeclarelayer{myback}
+\pgfsetlayers{myback,background,main}
+
+\tikzset{mycolor/.style = {line width=1bp,color=#1}}%
+\tikzset{myfillcolor/.style = {draw,fill=#1}}%
+\tikzstyle{line} = [draw, line width=1pt]
+\tikzstyle{arrow} = [draw, line width=1pt, ->]
+
+\NewDocumentCommand{\highlight}{O{blue!40} m m}{%
+\draw[mycolor=#1,rounded corners] (#2.north west)rectangle (#3.south east);
+}
+
+\NewDocumentCommand{\fhighlight}{O{blue!40} m m}{%
+\draw[myfillcolor=#1,rounded corners] (#2.north west)rectangle (#3.south east);
+}
+
+\usetheme[numbering=fraction, background=dark]{metropolis}
+%%\AtBeginSection[]
+%%{
+%%  \begin{frame}
+%%    \frametitle{Table of Contents}
+%%    \tableofcontents[currentsection]
+%%  \end{frame}
+%%}
+
+%%\let\olditem\item
+%%\renewcommand{\item}{\vspace{0.5\baselineskip}\olditem}
+
+\newcommand{\E}[1]{\mathbb{E}\left[#1\right]}
+\begin{document}
+
+\title{Reinforcement Learning 2}
+\subtitle{Complications \& approximations}
+\author{Andrew Lampinen}
+\date{Psych 209, Winter 2018}
+\frame{\titlepage}
+
+
+\section{Introduction}
+\begin{frame}{Plan for this lecture}
+Talk about all the stuff that makes it messy: 
+\begin{center}
+    \includegraphics[width=0.3\textwidth]{figures/walkingbaby.jpg}~
+    \includegraphics[width=0.3\textwidth]{figures/selfdrivingcar.jpg}~
+    \includegraphics[width=0.3\textwidth]{figures/playingchess.jpg}
+\end{center}
+\begin{itemize}
+    \item<2-> Infinite spaces \& approximations.
+    \item<3-> Exploration \& on/off-policy learning.
+    \item<4-> Other approaches.
+    
+\end{itemize}
+\end{frame}
+
+
+\end{document}
