@@ -72,52 +72,50 @@
 \end{frame}
 
 \section{Formalizing tasks: MDPs}
-\begin{frame}{Markov Decision Processes (MDPs)}
+\begin{frame}[label=mdps]{Markov Decision Processes (MDPs)}
 \begin{figure}
 \centering
 \begin{tikzpicture}[auto]
-    \uncover<1-5>{
+    \uncover<1-4>{
         \node at (0, 0) (A) {Agent};
-    }
-    \uncover<2-5> {
         \node at (0, -3) (E) {Environment};
     }
-    \uncover<3-5>{
+    \uncover<2-4>{
         \path [arrow] (E.west) to [in=180,out=135] node [opacity=0.5, xshift=5pt, yshift=-25pt, text width=40pt] {\small shows state to} (A.west); 
     }
-    \uncover<4-5>{
+    \uncover<3-4>{
         \path [arrow] (A.south) to  node [opacity=0.5, text width=30pt] {\small acts on} (E.north); 
     }
-    \uncover<5>{
+    \uncover<4>{
         \path [arrow] (E.east) to [in=0,out=45] node [opacity=0.5, xshift=50pt, text width=40pt] {\small rewards} (A.east); 
     }
-    \uncover<6-> {
+    \uncover<5-> {
         \node [text width=35pt, align=center] at (-2.5, 0) (A) {Agent (\(t=0\))};
         \node [text width=60pt, align=center] at (-2.5, -3) (E) {Environment (\(t=0\))};
     }
-    \uncover<7->{
+    \uncover<6->{
         \path [arrow] ([yshift=10pt]E.west) to [in=180,out=135] node [opacity=0.5, xshift=5pt, yshift=-20pt, text width=40pt] {\small shows state to} ([yshift=10pt]A.west); 
     }
 
-    \uncover<8->{ 
+    \uncover<7->{ 
         \path [arrow] (A.south) to  node [opacity=0.5, xshift=-40pt] {\small acts on} (E.north); 
     }
 
-    \uncover<9->{
+    \uncover<8->{
         \node [text width=35pt, align=center] at (2.5, 0) (A1) {Agent (\(t=1\))};
         \node [text width=60pt, align=center] at (2.5, -3) (E1) {Environment (\(t=1\))};
     }
-    \uncover<10->{
+    \uncover<9->{
         \path [arrow] ([yshift=8pt]E.east) to node [opacity=0.5] {\small evolves to} ([yshift=8pt]E1.west); 
     }
-    \uncover<11->{
+    \uncover<10->{
         \path [arrow] ([yshift=10pt]E1.west) to [in=180,out=135] node [opacity=0.5, xshift=5pt, yshift=-20pt, text width=40pt] {\small state \& reward} ([yshift=10pt]A1.west); 
     }
 
-    \uncover<12->{ 
+    \uncover<11->{ 
         \path [arrow] (A1.south) to  node [opacity=0.5, xshift=-40pt] {\small acts on} (E1.north); 
     }
-    \uncover<13>{
+    \uncover<12>{
         %%\node [text width=35pt, align=center] at (7.5, 0) (A2) {Agent (\(t=2\))};
         \node  at (5, -3) (E2) {};
         \path [arrow] ([yshift=8pt]E1.east) to node [opacity=0.5] {\small ...} ([yshift=8pt]E2.west); 
@@ -129,7 +127,7 @@
 \begin{frame}{Agents \& actions}
 \begin{columns}
 \column{0.5\textwidth}
-Agents:
+Agent:
 \begin{itemize}
     \item At each time step \(t\), perceives the \textbf{state}, \(s_t\) decides on an \textbf{action}, \(a_t\) from the set of actions available in that state, \(A(s_t)\).
     \item<2-> E.g. press gas, brake, turn wheel left 0.57 radians, press gas + turn right 2.2 radians, shift to 4th gear, ...
@@ -177,6 +175,8 @@ Rewards:
     \end{center}
 \end{columns}
 \end{frame}
+
+\againframe<12>{mdps}
 
 \begin{frame}[standout]
 Questions?
@@ -235,9 +235,10 @@ Questions?
     \item<1-> Temporal Difference (TD) learning is a formal framework for learning from surprises. 
     \item<2-> For \emph{any} value function, we should have that
         \[V^{\pi}(s_{t}) = r_{t+1} + \gamma V^{\pi}(s_{t+1})\] 
+        (This is often called the \textbf{Bellman Equation}.)
     \item<3-> So let's try to make this more true, 
-        \[V^{\pi}(s) = V^{\pi}(s) + \alpha \underbrace{\left( r_{t+1} + \gamma V^{\pi}(s_{t+1}) - V(s)\right)}_{\text{prediction error!}}, \quad \alpha \in [0, 1]\]
-    \item<4-> This type of update is called \emph{value iteration}, and is guaranteed to converge to the true value function for a policy under certain conditions.
+        \[V^{\pi}(s_t) = V^{\pi}(s_t) + \alpha \underbrace{\left( r_{t+1} + \gamma V^{\pi}(s_{t+1}) - V(s_t)\right)}_{\text{prediction error!}}, \quad \alpha \in [0, 1]\]
+    \item<4-> Iterating this is guaranteed to converge to the true value function for a policy\footnote{assuming MDP is finite!}.\vspace{3em}
 \end{itemize}
 \end{frame}
 
@@ -266,6 +267,7 @@ Questions?
     }
     \end{center}
 \end{columns}
+\note{What do you think?}
 \end{frame}
 
 \section{Q-learning}
@@ -273,12 +275,41 @@ Questions?
 
 \begin{frame}{Q-values}
 \begin{itemize}
-\item The solution we'll take is to incorporate the action into our values by estimating the \emph{value of an action in a state}, which we'll denote by \(Q(s,a)\):
+\item The solution we'll explore incorporates the action into our values by estimating the \emph{value of an action in a state}, which we'll denote by \(Q(s,a)\):
     \[Q^\pi(s,a) = \E{\text{Return} \, |\, s, a} = \E{\sum_{t=1}^\infty \gamma^t r_t \, \bigg \vert \, s, a } \]
 \item<2-> Notice that this contains the value function from before:
     \[V^\pi(s) = \sum_{a \in A(s)} p(a | s, \pi) Q^{\pi} (s, a)\]
 \item<3-> But it also gives us ways of picking policies, e.g. pick the action with the highest \(Q\).
 \end{itemize}
+\end{frame}
+
+\begin{frame}{Learning Q-values}
+\begin{itemize}
+    \item<1-> Using TD learning, we have another Bellman equation:
+        \[Q^{\pi}\left(s_{t}, a_t\right) = r_{t+1} + \gamma \max_{a'} Q^{\pi}\left(s_{t+1}, a'\right) \] 
+    \item<2-> So let's try to make this more true, 
+        {\small
+        \[Q^{\pi}(s_{t}, a_t) = Q^{\pi}(s_t. a_t) + \alpha \underbrace{\left( \left[ r_{t+1} + \max_{a'} \gamma Q^{\pi}(s_{t+1}, a') \right] - Q(s_t, a_t)\right)}_{\text{prediction error!}}\]}
+    \item<3-> Almost surely converges to \(Q^*\) (and by extension \(\pi^*\)), as long as MDP is finite and each state, action pair is visited``enough.'' 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[standout]
+Questions?
+\end{frame}
+
+\begin{frame}{Wrapping up}
+\begin{itemize}
+    \item Audience participation!
+    \begin{center}
+        \includegraphics[width=0.3\textwidth]{figures/walkingbaby.jpg}~
+        \includegraphics[width=0.3\textwidth]{figures/selfdrivingcar.jpg}~
+        \includegraphics[width=0.3\textwidth]{figures/playingchess.jpg}
+    \end{center}
+    \item<2-> Are there potential problems with what we've learned so far?
+    
+\end{itemize}
+\note{AP: Identify the things we've learned in each of these tasks}
 \end{frame}
 
 
