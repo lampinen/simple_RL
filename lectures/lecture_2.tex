@@ -63,13 +63,99 @@ Talk about all the stuff that makes it messy:
 \end{center}
 \begin{itemize}
     \item<2-> Infinite spaces \& approximations.
-    \item<3-> Exploration \& on/off-policy learning.
-    \item<4-> Correlations \& replay.
+    \item<3-> Correlations \& replay.
+    \item<4-> Exploration \& on/off-policy learning.
     \item<5-> Unobservables \& POMDPs.
     \item<6-> Other approaches.
-    
 \end{itemize}
 \end{frame}
 
+\section{Function approximation}
+
+\begin{frame}{Similarities \& dissimilarities}
+\begin{itemize}
+    \item More state, action pairs in chess than atoms in observable universe. 
+    \item<2-> However... 
+    \begin{center}
+        \includegraphics[width=0.25\textwidth]{figures/simchess4.png}~
+        \includegraphics[width=0.25\textwidth]{figures/simchess3.png} \\[5pt]
+        \includegraphics[width=0.25\textwidth]{figures/simchess2.png}~
+        \includegraphics[width=0.25\textwidth]{figures/simchess1.png}
+    \end{center}
+\end{itemize}
+\note{Look at the similarity between these positions -- we should be able to generalize across them somehow (being aware that we shouldn't overgeneralize to the last case)}
+\end{frame}
+
+\begin{frame}{Approximating the Q-table}
+\begin{itemize}
+    \item Previously, the Q-table was a lookup function. Let's replace this with some other function that maps states to Q-values for actions.
+    \begin{figure}
+    \centering
+    \begin{tikzpicture}
+    \node at (0, 1) (B) {\includegraphics[width=0.12\textwidth]{figures/simchess1.png}};
+    \node[draw, circle, minimum width=3em, line width=1pt] at (0, -1) (M) {Rd8};
+    \node[draw, circle, minimum width=3em, line width=1pt] at (6, 0) (Q) {+0.743}; 
+
+    \only<1> {
+
+        \node[draw, minimum width=3em, line width=1pt, text width=4em, align=center] at (3, 0) (LT) {Lookup table};
+        \path [line] ([xshift=-4pt]B.east) to (LT.west);
+        \path [line] (M.east) to (LT.west);
+        \path [line] (LT.east) to (Q.west);
+
+    }
+    \uncover<2> {
+        \node[draw, circle, minimum width=3em, line width=1pt] at (3, -1.5) (H0) {};
+        \node[draw, circle, minimum width=3em, line width=1pt] at (3, 0) (H1) {};
+        \node[draw, circle, minimum width=3em, line width=1pt] at (3, 1.5) (H2) {};
+
+        \path [line] ([xshift=-4pt]B.east) to (H0.west);
+        \path [line] ([xshift=-4pt]B.east) to (H1.west);
+        \path [line] ([xshift=-4pt]B.east) to (H2.west);
+        \path [line] (M.east) to (H0.west);
+        \path [line] (M.east) to (H1.west);
+        \path [line] (M.east) to (H2.west);
+
+        \path[line] (H0.east) to (Q.west);
+        \path[line] (H1.east) to (Q.west);
+        \path[line] (H2.east) to (Q.west);
+    }
+    \end{tikzpicture}
+    \end{figure}
+\end{itemize}
+\note{NNs are universal function approximators}
+\end{frame}
+
+\begin{frame}{Playing atari games}
+\begin{center}
+    \includegraphics[width=\textwidth]{figures/DQN.png}
+\end{center}
+\note{Note that the action is no longer an input! Why might this be better in practice?}
+\end{frame}
+
+\section{Replay}
+\begin{frame}{Fix one problem and ...}
+\begin{itemize}
+    \item Generalization comes at the expense of cross talk... Will a self-driving car learning to parallel park forget how to drive on the freeway?
+    \item<2-> CLS is intended to address this:
+    \begin{center}
+        \includegraphics[width=0.75\textwidth]{figures/cls.jpg}
+    \end{center}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Replay buffers}
+\begin{itemize}
+    \item In practice, whenever we get a new \((s_t, a_t, r_{t+1}, s_{t+1})\) tuple, stick it in a queue.
+    \item<2-> instead of  
+         {\small
+          \[Q^{\pi}(s_{t}, a_t) = Q^{\pi}(s_t. a_t) + \alpha \underbrace{\left( \left[ r_{t+1} + \max_{a'} \gamma Q^{\pi}(s_{t+1}, a') \right] - Q(s_t, a_t)\right)}_{\text{prediction error!}}\]}
+         we sample \(k \sim Unif(\text{replay buffer indices})\) 
+         {\small
+          \[Q^{\pi}(s_{k}, a_k) = Q^{\pi}(s_k. a_k) + \alpha \underbrace{\left( \left[ r_{k+1} + \max_{a'} \gamma Q^{\pi}(s_{k+1}, a') \right] - Q(s_k, a_k)\right)}_{\text{prediction error!}}\]}
+
+
+\end{itemize}
+\end{frame}
 
 \end{document}
