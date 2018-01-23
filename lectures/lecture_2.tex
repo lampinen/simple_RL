@@ -65,8 +65,7 @@ Talk about all the stuff that makes it messy:
     \item<2-> Infinite spaces \& approximations.
     \item<3-> Correlations \& replay.
     \item<4-> Exploration \& on/off-policy learning.
-    \item<5-> Unobservables \& POMDPs.
-    \item<6-> Other approaches.
+    \item<5-> Unobservables \& POMDPs, different assumptions and other approaches.
 \end{itemize}
 \end{frame}
 
@@ -88,11 +87,11 @@ Talk about all the stuff that makes it messy:
 
 \begin{frame}{Approximating the Q-table}
 \begin{itemize}
-    \item Previously, the Q-table was a lookup function. Let's replace this with some other function that maps states to Q-values for actions.
+    \item Previously, the Q-table was a lookup function. Let's replace this with some other function that maps states and actions to Q-values.
     \begin{figure}
     \centering
     \begin{tikzpicture}
-    \node at (0, 1) (B) {\includegraphics[width=0.12\textwidth]{figures/simchess1.png}};
+    \node at (0, 1) (B) {\includegraphics[width=0.12\textwidth]{figures/simchess2.png}};
     \node[draw, circle, minimum width=3em, line width=1pt] at (0, -1) (M) {Rd8};
     \node[draw, circle, minimum width=3em, line width=1pt] at (6, 0) (Q) {+0.743}; 
 
@@ -104,7 +103,7 @@ Talk about all the stuff that makes it messy:
         \path [line] (LT.east) to (Q.west);
 
     }
-    \uncover<2> {
+    \uncover<2-> {
         \node[draw, circle, minimum width=3em, line width=1pt] at (3, -1.5) (H0) {};
         \node[draw, circle, minimum width=3em, line width=1pt] at (3, 0) (H1) {};
         \node[draw, circle, minimum width=3em, line width=1pt] at (3, 1.5) (H2) {};
@@ -122,6 +121,7 @@ Talk about all the stuff that makes it messy:
     }
     \end{tikzpicture}
     \end{figure}
+    \item<3-> Loss: \[L = \left(r_{t+1} + \gamma \max_{a'} Q(s_{t+1}, a'; \theta_i^{-}) - Q(s_{t}, a_t; \theta_i)\right)^2\]
 \end{itemize}
 \note{NNs are universal function approximators}
 \end{frame}
@@ -136,8 +136,8 @@ Talk about all the stuff that makes it messy:
 \section{Replay}
 \begin{frame}{Fix one problem and ...}
 \begin{itemize}
-    \item Generalization comes at the expense of cross talk... Will a self-driving car learning to parallel park forget how to drive on the freeway?
-    \item<2-> CLS is intended to address this:
+    \item Generalization comes at the expense of cross talk and catastrophic forgetting. Will a self-driving car learning to parallel park forget how to drive on the freeway?
+    \item<2-> CLS is a theory of how humans and animals avoid this:
     \begin{center}
         \includegraphics[width=0.75\textwidth]{figures/cls.jpg}
     \end{center}
@@ -145,17 +145,148 @@ Talk about all the stuff that makes it messy:
 \end{frame}
 
 \begin{frame}{Replay buffers}
+The Atari game-playing paper addressed this with \textbf{experience replay}:
 \begin{itemize}
-    \item In practice, whenever we get a new \((s_t, a_t, r_{t+1}, s_{t+1})\) tuple, stick it in a queue.
+    \item Whenever we experience a new \((s_t, a_t, r_{t+1}, s_{t+1})\) tuple, stick it in a buffer.
     \item<2-> instead of  
-         {\small
-          \[Q^{\pi}(s_{t}, a_t) = Q^{\pi}(s_t. a_t) + \alpha \underbrace{\left( \left[ r_{t+1} + \max_{a'} \gamma Q^{\pi}(s_{t+1}, a') \right] - Q(s_t, a_t)\right)}_{\text{prediction error!}}\]}
-         we sample \(k \sim Unif(\text{replay buffer indices})\) 
-         {\small
-          \[Q^{\pi}(s_{k}, a_k) = Q^{\pi}(s_k. a_k) + \alpha \underbrace{\left( \left[ r_{k+1} + \max_{a'} \gamma Q^{\pi}(s_{k+1}, a') \right] - Q(s_k, a_k)\right)}_{\text{prediction error!}}\]}
+         {
+          \[\Delta Q^{\pi}(s_{t}, a_t) = \alpha \underbrace{\left( \left[ r_{t+1} + \max_{a'} \gamma Q^{\pi}(s_{t+1}, a') \right] - Q(s_t, a_t)\right)}_{\text{prediction error!}}\]}%
+        we sample a random experience from our buffer and update with that: \(k \sim Unif(\text{replay buffer indices})\) 
+         {
+          \[\Delta Q^{\pi}(s_{k}, a_k) = \alpha \underbrace{\left( \left[ r_{k+1} + \max_{a'} \gamma Q^{\pi}(s_{k+1}, a') \right] - Q(s_k, a_k)\right)}_{\text{prediction error!}}\]}
 
 
 \end{itemize}
 \end{frame}
+
+\section{Exploration and exploitation and on/off policy}
+\begin{frame}{The need to explore}
+\begin{center}
+    \includegraphics[width=0.75\textwidth]{figures/googlemaps.png}
+\end{center}
+\begin{itemize}
+    \item<2-> How do I trade off between \textbf{exploiting} the best path to lunch I've found so far and \textbf{exploring} my other options?
+    \item<3-> In other words, how do we incorporate exploration into our policy?
+    \item<4-> This is important -- remember convergence guarantees required \emph{every} state, action pair to be visited ``frequently.''
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The exploration-exploitation trade-off}
+There is a \emph{fundamental} trade-off between exploring and exploiting:
+\begin{itemize}
+    \item<2-> Exploring wastes time trying things I'm pretty sure aren't good.
+    \item<3-> Exploiting risks missing a great opportunity.
+    \item<4-> We have to find some balance between these that results in good payoffs but still makes sure we don't miss too much.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\(\epsilon\)-greedy}
+\begin{itemize}
+    \item One simple technique is just to choose actions randomly some small fraction \(\epsilon\) of the time. 
+    \item<2-> The rest of the time, take the maximum \(Q\) action. 
+    \item<3-> We call this \(\epsilon\)-greedy.
+    \item<4-> We can also do clever things like \emph{anneal} \(\epsilon\) over training.
+        \begin{itemize} 
+        \item Act mostly randomly and explore a lot early in training.
+        \item Act mostly greedily and exploit a lot late in training/in testing.
+        \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Exploit during testing or keep exploring?}
+The point about testing vs. training is a little tricky... 
+\begin{columns}
+\column{0.5\textwidth}
+\begin{itemize}
+    \item<1-> Do chess players stop learning when they're playing for the world championship? 
+    \item<2-> A self-driving car can't just be trained and set free -- destinations, roads, and laws are all evolving.
+    \item<3-> What if my direct path to lunch was blocked by a building that was torn down? 
+\end{itemize}
+\column{0.5\textwidth}
+    \begin{center}
+    \only<1>{
+        \includegraphics[width = \textwidth]{figures/chess.jpg}
+    }
+    \only<2>{
+        \includegraphics[width = \textwidth]{figures/citystreet.jpg}
+    }
+    \only<3->{
+        \includegraphics[width = \textwidth]{figures/googlemaps.png}
+    }
+    \end{center}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Non-optimality of \(Q\)-learning under exploration}
+\begin{itemize}
+    \item But \(Q\)-learning fundamentally assumes that we will be behaving completely greedily during training! Why?
+    \item<2-> It's built into our computation of the Q-update: 
+        \[\Delta Q^{\pi}(s_{t}, a_t) = \alpha {\left( \left[ r_{t+1} + \, {\color{red} \max_{a'}} \, \gamma Q^{\pi}(s_{t+1}, {\color{red}a'}) \right] - Q(s_t, a_t)\right)}\]
+    \item<3-> If we want to behave optimally with a policy \(\pi\) that explores, we have to incorporate this policy into the learning rule:
+        {\footnotesize \[\Delta Q^{\pi}(s_{t}, a_t) \; {\color{red} \stackrel{?}{=}} \; \alpha \left( \left[ r_{t+1} + \, {\color{red} \sum_{a'} p(a' | s_t, a_t, s_{t+1}, \pi)} \, \gamma Q^{\pi}(s_{t+1}, {\color{red} a'}) \right] - Q(s_t, a_t)\right)\]}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{SARSA}
+\begin{itemize}
+    \item One algorithm for doing this is SARSA. It works almost exactly like Q learning, except we store \((s_t, a_t, r_{t+1}, s_{t+1}, a_{t+1})\)
+    \item<2-> and change our update from 
+        \[\Delta Q^{\pi}(s_{t}, a_t) = \alpha {\left( \left[ r_{t+1} + \, {\color{red} \max_{a'}} \, \gamma Q^{\pi}(s_{t+1}, a') \right] - Q(s_t, a_t)\right)}\]
+        to
+        \[\Delta Q^{\pi}(s_{t}, a_t) = \alpha {\left( \left[ r_{t+1} + \gamma Q^{\pi}(s_{t+1}, {\color{red} a_{t+1}}) \right] - Q(s_t, a_t)\right)}\]
+    \item<3-> Since our actions in the state are distributed according to \(\pi\), in expectation our \(Q\)-value updates will be as well.
+\end{itemize}
+\note{Note that many algorithms that are not \(Q\)-learning per se use \(Q\)-values...}
+\end{frame}
+
+\begin{frame}{On/off-policy}
+This highlights an important, but somewhat orthogonal distinction: \vspace{-1.5em} 
+\begin{itemize}
+    \item<2-> Do we want to learn \textbf{on-policy}, that is, using the same policy we will be using during evaluation (like SARSA)?
+    \item<3-> Or do we want to learn \textbf{off-policy}, that is, using a different policy during training than during evaluation (like \(Q\)-learning)?
+\end{itemize}
+\uncover<4->{There are tradeoffs!} 
+\begin{itemize}
+    \item<5-> \textbf{On-policy:} Can be faster, can be more stable. 
+    \item<6-> \textbf{Off-policy:} Can learn from anything, even totally random play -- this makes learning by observation or incorporating more early exploration easier.
+\end{itemize}
+\end{frame}
+
+\section{Wrapping up}
+
+\begin{frame}{Summary}
+\begin{itemize}
+\item We have an \textbf{agent} that takes \textbf{actions} in \textbf{states}. 
+\item<2-> These actions are chosen according to a \textbf{policy}, sometimes derived from some sort of \textbf{value function}. 
+\item<3-> We evaluated on \textbf{expected discounted rewards.}
+\item<4-> The \textbf{discount} reflects how future-oriented we are.
+\item<5-> \(Q^\pi(s,a)\) is the expected return of \(a\) in \(s\) under \(\pi\).
+\item<6-> We can learn \(Q\) values by \textbf{TD learning} (surprise).
+\item<7-> Can approximate \(Q\) using deep learning (for generalization). 
+\item<8-> There's a trade-off between \textbf{exploring} and \textbf{exploiting}!
+\item<9-> And there's way more complexity to RL overall.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Other approaches}
+Many other approaches:
+\begin{itemize}
+    \item<1-> Policy gradient methods.
+    \item<2-> Actor-critic methods.
+    \item<3-> Many, many variations.
+\end{itemize}
+\uncover<4->{And under different assumptions:}
+\begin{itemize}
+    \item<5-> What if we only observe part of the state? (POMDPs.) 
+    \item<6-> What if we actually build models of the world and plan over these? (Model-based RL, as opposed to Model-free.) 
+    \item<7-> ... Or something in between? (Successor-representation, imagination.)
+    \item<8-> And much more.
+\end{itemize}
+\note{This is a huge field, Stanford has (several) whole graduate class just on RL, much more to be explored}
+\end{frame}
+
+
+
 
 \end{document}

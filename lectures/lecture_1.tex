@@ -162,18 +162,20 @@ So if you're in a state, it doesn't matter how you got to that state}
 
 \begin{frame}{Time, \& rewards}
 \begin{columns}
-\column{0.5\textwidth}
+\column{0.66\textwidth}
 Rewards:
 \begin{itemize}
     \item Agent receives a \textbf{reward} \(r_{t+1} \in R\) according to \textbf{reward probabilities}: \(p(r_{t+1} | s_t, a_t, s_{t+1})\). 
     \item<2-> E.g. fare for reaching a destination, penalty for hitting a pedestrian, ...
     \item<3-> \textbf{Return} is the sum of the \textbf{discounted} rewards over time: \(\sum_{t=1}^\infty \gamma^t r_t\) for some \(\gamma \in (0, 1]\).
+    \item<4-> \textbf{Discount factor} \(\gamma\) tells how much we prioritize the present over the future.
 \end{itemize}
-\column{0.5\textwidth}
+\column{0.34\textwidth}
     \begin{center}
     \includegraphics[width = \textwidth]{figures/money.png}
     \end{center}
 \end{columns}
+\note{Discounting and the marshmallow task}
 \end{frame}
 
 \againframe<12>{mdps}
