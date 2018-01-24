@@ -102,13 +102,15 @@ class random_controller(object):
 
 class linear_tabular_Q_controller(random_controller):
     """Tabular Q-learning controller for the linear problem."""
-    def __init__(self, possible_states=range(6), epsilon=0.05, gamma=0.95, eta=0.1):
+    def __init__(self, possible_states=range(6), epsilon=0.05, gamma=0.9, eta=0.1):
         """Epsilon: exploration probability (epsilon-greedy)
            gamma: discount factor
            eta: update rate"""
         super().__init__()
         self.name = "Tabular Q"
         self.Q_table = {(x,):  {"left": 0.01-np.random.rand()/50, "right": 0.01-np.random.rand()/50} for x in possible_states} 
+        self.possible_states = possible_states
+        self.str_possible_states = [str(x) for x in possible_states] # for printing
         self.terminal_state = possible_states[-1]
         self.eta = eta
         self.gamma = gamma
@@ -134,6 +136,16 @@ class linear_tabular_Q_controller(random_controller):
 
         self.Q_table[prev_state][action] = (1 - self.eta) * self.Q_table[prev_state][action] + self.eta * target
 
+    def print_pretty_Q_table(self):
+        """Prints a Q-table where the L-R dimension represents state and the
+           top row represents the Q-value of the "right" action, the bottom row
+           represents the Q-value of the "left" action."""
+        print("x:\t" + "\t".join(self.str_possible_states))
+        right_Qs = map(lambda x: "%.2f" % self.Q_table[(x,)]["right"], self.possible_states[:-1])
+        print("right:\t"+ "\t".join(right_Qs) + "\tend") 
+        left_Qs = map(lambda x: "%.2f" % self.Q_table[(x,)]["left"], self.possible_states[:-1])
+        print("left:\t"+ "\t".join(left_Qs) + "\tend") 
+
 
         
 if __name__ == "__main__":
@@ -149,7 +161,14 @@ if __name__ == "__main__":
     for i in range(10):
         tq.set_testing()
         lp.run_trial(tq, testing=True)
+        tq.print_pretty_Q_table()
         tq.set_training()
         lp.run_k_trials(tq, 5)
     tq.set_testing()
     lp.run_trial(tq, testing=True)
+    tq.print_pretty_Q_table()
+
+    np.random.seed(0)
+    tq = linear_tabular_Q_controller()
+    lp.run_k_trials(tq, 10000)
+    tq.print_pretty_Q_table()
