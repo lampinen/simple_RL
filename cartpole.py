@@ -1,6 +1,9 @@
 import numpy as np
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
+import matplotlib.pyplot as plot
+from matplotlib import animation
+from matplotlib.patches import Rectangle, Circle
 from collections import deque
 
 class cartpole_problem(object):
@@ -17,6 +20,14 @@ class cartpole_problem(object):
         self.max_lifetime = max_lifetime
 
         self.reset_state()
+
+        # animation constants
+        self.cart_half_width = 0.25
+        self.cart_height = 0.2
+        self.pole_half_width = 0.025
+        self.cart_wheel_radius = 0.05
+        self.pole_offset = self.cart_height + 2 * self.cart_wheel_radius - self.pole_half_width 
+        self.cart_wheel_offset = self.cart_half_width - self.cart_wheel_radius
 
     def get_state(self):
         """Returns current state as a tuple"""
@@ -56,9 +67,57 @@ class cartpole_problem(object):
         """Loses if not within 2.5 m of start and 15 deg. of vertical"""
         return not (-2.5 < self.x < 2.5 and -0.262 < self.phi < 0.262)
 
-    def run_trial(self, controller, testing=False):
+    def animate(self, trial_state_history, ticks_per_second=20):
+        """Makes a simple video showing the trial"""
+        fig, ax = plot.subplots()
+
+        ax.set_xlim([-2.5, 2.5])
+        ax.get_yaxis().set_visible(False)
+        ax.set_ylim([-1, 3])
+
+        # create patches, draw first frame
+        x, _, phi, _ = trial_state_history[0]
+
+        # fg
+        fg_p = Rectangle((-2.5, -1), 5, 1, facecolor="#ccaa99")
+        ax.add_patch(fg_p)
+
+
+        # pole
+        pole_p = Rectangle((x-self.pole_half_width, self.pole_offset), 2*self.pole_half_width, 2*self.pole_half_length, facecolor="#777788")
+        ax.add_patch(pole_p)
+        # cart
+        cart_p = Rectangle((x-self.cart_half_width, 2*self.cart_wheel_radius), 2*self.cart_half_width, self.cart_height, facecolor="k")
+        ax.add_patch(cart_p)
+
+        wheel1_p = Circle((x-self.cart_wheel_offset, self.cart_wheel_radius), self.cart_wheel_radius, facecolor="k")
+        ax.add_patch(wheel1_p)
+
+        wheel2_p = Circle((x+self.cart_wheel_offset, self.cart_wheel_radius), self.cart_wheel_radius, facecolor="k")
+        ax.add_patch(wheel2_p)
+
+        def __draw_frame(state):
+            x, _, phi, _ = state
+            pole_p.set_xy((x-self.pole_half_width, self.pole_offset))
+            pole_p.angle = 57.3*phi # to degrees
+            cart_p.set_xy((x-self.cart_half_width, 2*self.cart_wheel_radius))
+            wheel1_p.center = (x-self.cart_wheel_offset, self.cart_wheel_radius)
+            wheel2_p.center = (x+self.cart_wheel_offset, self.cart_wheel_radius)
+            
+        anim = animation.FuncAnimation(fig, __draw_frame, frames=trial_state_history, interval=1000./ticks_per_second)
+        plot.show()
+           
+          
+            
+        print(trial_state_history)
+        pass
+
+    def run_trial(self, controller, testing=False, animate=False):
         self.reset_state()
         i = 0
+        if animate:
+            trial_state_history = []
+            trial_state_history.append(self.get_state())
         while i < self.max_lifetime:
             i += 1
             this_state = self.get_state()
@@ -71,14 +130,19 @@ class cartpole_problem(object):
             if not testing:
                 controller.update(this_state, this_action, new_state, reward)
 
+            if animate:
+                trial_state_history.append(new_state)
+
             if loss:
                 break
 
         if testing:
             print("Ran testing trial with %s Controller, achieved a lifetime of %i steps" % (controller.name, i))
 
-        return i
+        if animate:
+            self.animate(trial_state_history)
 
+        return i
 
     def run_k_trials(self, controller, k):
         """Runs k trials, using the specified controller. Controller must have
@@ -282,7 +346,7 @@ if __name__ == "__main__":
     cpp = cartpole_problem()
 
     cpc = random_controller()
-    cpp.run_trial(cpc, testing=True)
+    cpp.run_trial(cpc, testing=True, animate=True)
 
     np.random.seed(0)
     tqc = tabular_Q_controller()
