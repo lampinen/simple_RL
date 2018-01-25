@@ -106,11 +106,6 @@ class cartpole_problem(object):
             
         anim = animation.FuncAnimation(fig, __draw_frame, frames=trial_state_history, interval=1000./ticks_per_second)
         plot.show()
-           
-          
-            
-        print(trial_state_history)
-        pass
 
     def run_trial(self, controller, testing=False, animate=False):
         self.reset_state()
