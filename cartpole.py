@@ -104,7 +104,10 @@ class cartpole_problem(object):
             wheel1_p.center = (x-self.cart_wheel_offset, self.cart_wheel_radius)
             wheel2_p.center = (x+self.cart_wheel_offset, self.cart_wheel_radius)
             
-        anim = animation.FuncAnimation(fig, __draw_frame, frames=trial_state_history, interval=1000./ticks_per_second)
+        anim = animation.FuncAnimation(fig, __draw_frame, 
+                                       frames=trial_state_history,
+				       interval=1000./ticks_per_second,
+				       repeat=False)
         plot.show()
 
     def run_trial(self, controller, testing=False, animate=False):
