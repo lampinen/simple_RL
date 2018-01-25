@@ -179,6 +179,23 @@ class random_controller(object):
         """Update policy or whatever, override."""
         pass
 
+class alternating_controller(object):
+    """Alternates left and right."""
+    def __init__(self):
+        super().__init__()
+        self.name = "Alternating"
+        self.left = True
+
+    def choose_action(self, state):
+        """Takes a state and returns an action, "left" or "right," to take.
+           this method chooses randomly, should be overridden by fancy
+           controllers."""
+        self.left = not self.left
+        if self.left:
+            return "left"
+        else:
+            return "right"
+
 
 class tabular_Q_controller(random_controller):
     """Tabular Q-learning controller."""
@@ -342,6 +359,9 @@ class dqn_controller(random_controller):
 if __name__ == "__main__":
     np.random.seed(0)
     cpp = cartpole_problem()
+    np.random.seed(0)
+    ac = alternating_controller()
+    cpp.run_trial(ac, testing=True, animate=True)
 
     cpc = random_controller()
     cpp.run_trial(cpc, testing=True, animate=True)
