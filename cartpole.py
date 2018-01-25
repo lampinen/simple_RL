@@ -103,6 +103,8 @@ class cartpole_problem(object):
             cart_p.set_xy((x-self.cart_half_width, 2*self.cart_wheel_radius))
             wheel1_p.center = (x-self.cart_wheel_offset, self.cart_wheel_radius)
             wheel2_p.center = (x+self.cart_wheel_offset, self.cart_wheel_radius)
+            if not (-0.262 < phi < 0.262):
+                pole_p.set_facecolor("r")
             
         anim = animation.FuncAnimation(fig, __draw_frame, 
                                        frames=trial_state_history,
