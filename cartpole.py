@@ -5,7 +5,7 @@ import matplotlib.pyplot as plot
 from matplotlib import animation
 from matplotlib.patches import Rectangle, Circle
 from collections import deque
-
+from IPython.display import display, HTML
 class cartpole_problem(object):
     """Class implementing the cartpole world -- you may want to glance at the
        methods to see if you can understand what's going on."""
@@ -105,12 +105,13 @@ class cartpole_problem(object):
             wheel2_p.center = (x+self.cart_wheel_offset, self.cart_wheel_radius)
             if not (-0.262 < phi < 0.262):
                 pole_p.set_facecolor("r")
+
             
-        anim = animation.FuncAnimation(fig, __draw_frame, 
+        anim = animation.FuncAnimation(fig, __draw_frame,
                                        frames=trial_state_history,
-				       interval=1000./ticks_per_second,
-				       repeat=False)
-        plot.show()
+                                       interval=1000./ticks_per_second,
+                                       repeat=False)
+        display(HTML(anim.to_jshtml()))
 
     def run_trial(self, controller, testing=False, animate=False):
         self.reset_state()
@@ -155,8 +156,7 @@ class cartpole_problem(object):
 
         avg_lifetime /= k
         print("Ran %i trials with %s Controller, (average lifetime of %f steps)" % (k,  controller.name, avg_lifetime))
-
-
+ 
 class random_controller(object):
     """Random controller/base class for fancier ones."""
     def __init__(self):
@@ -180,9 +180,9 @@ class random_controller(object):
     def update(self, prev_state, action, new_state, reward):
         """Update policy or whatever, override."""
         pass
-
+    
 class alternating_controller(object):
-    """Alternates left and right."""
+    """Just alternates left and right. Try this out if you think it's a good idea!"""
     def __init__(self):
         super().__init__()
         self.name = "Alternating"
@@ -197,7 +197,6 @@ class alternating_controller(object):
             return "left"
         else:
             return "right"
-
 
 class tabular_Q_controller(random_controller):
     """Tabular Q-learning controller."""
@@ -284,7 +283,7 @@ class dqn_controller(random_controller):
     """Simple deep-Q network controller -- 4 inputs (one for each state
        variable), two hidden layers, two outputs (Q-left, Q-right), and an
        optional replay buffer."""
-    def __init__(self, epsilon=0.05, gamma=0.95, eta=1e-4, nh1=100, nh2=100, replay_buffer=True): 
+    def __init__(self, epsilon=0.05, gamma=0.95, eta=1e-4, nh1=100, nh2=100, rseed=None, replay_buffer=True): 
         """Epsilon: exploration probability (epsilon-greedy)
            gamma: discount factor
            eta: learning rate,
@@ -296,6 +295,10 @@ class dqn_controller(random_controller):
         self.eta = eta
         self.gamma = gamma
         self.epsilon = epsilon
+
+	if rseed is not None:
+            np.random.seed(rseed)
+            tf.set_random_seed(rseed)
 
         if replay_buffer:
             self.replay_buffer = deque()

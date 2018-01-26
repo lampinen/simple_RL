@@ -53,9 +53,9 @@ class linear_problem(object):
                 break
 
         if testing:
-            print("Ran testing trial with %s controller, achieved a total reward of %.2f in %i steps" % (controller.name, total_reward, i)) 
+            print("Ran testing trial with %s controller, achieved a total reward of %.2f in %i steps" % (controller.name, total_reward, i+1)) 
 
-        return total_reward, i
+        return total_reward, i+1
 
     def run_k_trials(self, controller, k):
         """Runs k trials, using the specified controller. Controller must have
@@ -71,7 +71,7 @@ class linear_problem(object):
 
         avg_tr /= k
         avg_time /= k
-        print("Ran %i testing trials with %s controller, achieved an average total reward of %.2f in an average of %i steps" % (k, controller.name, avg_tr, avg_time)) 
+        print("Ran %i trials with %s controller, achieved an average total reward of %.2f in an average of %i steps" % (k, controller.name, avg_tr, avg_time)) 
 
             
 
@@ -99,8 +99,7 @@ class random_controller(object):
         """Update policy or whatever, override."""
         pass
 
-
-class linear_tabular_Q_controller(random_controller):
+class tabular_Q_controller(random_controller):
     """Tabular Q-learning controller for the linear problem."""
     def __init__(self, possible_states=range(6), epsilon=0.05, gamma=0.9, eta=0.1):
         """Epsilon: exploration probability (epsilon-greedy)
