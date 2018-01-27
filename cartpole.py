@@ -111,7 +111,7 @@ class cartpole_problem(object):
                                        frames=trial_state_history,
                                        interval=1000./ticks_per_second,
                                        repeat=False)
-        display(HTML(anim.to_html5_video()))
+        display(HTML(anim.to_jshtml()))
 
     def run_trial(self, controller, testing=False, animate=False):
         self.reset_state()
