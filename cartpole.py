@@ -111,7 +111,7 @@ class cartpole_problem(object):
                                        frames=trial_state_history,
                                        interval=1000./ticks_per_second,
                                        repeat=False)
-        display(HTML(anim.to_jshtml()))
+        display(HTML(anim.to_html5_video()))
 
     def run_trial(self, controller, testing=False, animate=False):
         self.reset_state()
@@ -296,7 +296,7 @@ class dqn_controller(random_controller):
         self.gamma = gamma
         self.epsilon = epsilon
 
-	if rseed is not None:
+        if rseed is not None:
             np.random.seed(rseed)
             tf.set_random_seed(rseed)
 
