@@ -64,11 +64,11 @@
     \end{center}
     \item<2-> ... potentially many features in common:
     \begin{itemize} 
-        \item<3-> Similar structure: states, actions, occasional rewards. We'll discuss a unified formal framework for many tasks like this. 
-        \item<4-> They're not directly supervised -- nobody tells you \textbf{exactly} the right answer. We'll discuss how to learn tasks like this. 
+        \item<3-> Similar structure: states, actions, occasional rewards. We'll discuss a unified formal framework for many tasks like this (\textbf{MDPs}). 
+        \item<4-> They're not directly supervised -- nobody tells you \emph{exactly} the right answer. We'll discuss how to learn tasks like this (\textbf{Reinforcement Learning}). 
     \end{itemize}
-    
 \end{itemize}
+\note{... and in the process we're going to define a whole bunch of terminology, since this is basically a quick overview of an entire field}
 \end{frame}
 
 \section{Formalizing tasks: MDPs}
@@ -81,7 +81,7 @@
         \node at (0, -3) (E) {Environment};
     }
     \uncover<2-4>{
-        \path [arrow] (E.west) to [in=180,out=135] node [opacity=0.5, xshift=5pt, yshift=-25pt, text width=40pt] {\small shows state to} (A.west); 
+        \path [arrow] (E.west) to [in=180,out=135] node [opacity=0.5, xshift=5pt, yshift=-25pt, text width=40pt] {\small perceives state of} (A.west); 
     }
     \uncover<3-4>{
         \path [arrow] (A.south) to  node [opacity=0.5, text width=30pt] {\small acts on} (E.north); 
@@ -94,7 +94,7 @@
         \node [text width=60pt, align=center] at (-2.5, -3) (E) {Environment (\(t=0\))};
     }
     \uncover<6->{
-        \path [arrow] ([yshift=10pt]E.west) to [in=180,out=135] node [opacity=0.5, xshift=5pt, yshift=-20pt, text width=40pt] {\small shows state to} ([yshift=10pt]A.west); 
+        \path [arrow] ([yshift=10pt]E.west) to [in=180,out=135] node [opacity=0.5, xshift=15pt, yshift=-15pt, text width=40pt] {\small state} ([yshift=10pt]A.west); 
     }
 
     \uncover<7->{ 
@@ -109,7 +109,7 @@
         \path [arrow] ([yshift=8pt]E.east) to node [opacity=0.5] {\small evolves to} ([yshift=8pt]E1.west); 
     }
     \uncover<10->{
-        \path [arrow] ([yshift=10pt]E1.west) to [in=180,out=135] node [opacity=0.5, xshift=5pt, yshift=-20pt, text width=40pt] {\small state \& reward} ([yshift=10pt]A1.west); 
+        \path [arrow] ([yshift=10pt]E1.west) to [in=180,out=135] node [opacity=0.5, yshift=-20pt, text width=40pt, align=center] {\small reward \& state} ([yshift=10pt]A1.west); 
     }
 
     \uncover<11->{ 
@@ -240,7 +240,7 @@ Questions?
         (This is often called the \textbf{Bellman Equation}.)
     \item<3-> So let's try to make this more true, 
         \[V^{\pi}(s_t) = V^{\pi}(s_t) + \alpha \underbrace{\left( r_{t+1} + \gamma V^{\pi}(s_{t+1}) - V(s_t)\right)}_{\text{prediction error!}}, \quad \alpha \in [0, 1]\]
-    \item<4-> Iterating this is guaranteed to converge to the true value function for a policy\footnote{assuming MDP is finite!}.\vspace{3em}
+    \item<4-> Iterating this is guaranteed to converge to the true value function for a policy (assuming MDP is finite).
 \end{itemize}
 \end{frame}
 
