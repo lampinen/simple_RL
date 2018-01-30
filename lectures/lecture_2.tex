@@ -1,4 +1,4 @@
-\documentclass{beamer}
+\documentclass{beamer} %use [handout] to get summary
 \usepackage{pgfpages}
 %\setbeameroption{show notes on second screen=left} %enable for notes
 \usepackage{graphicx}
@@ -95,7 +95,7 @@ Talk about all the stuff that makes it messy:
     \node[draw, circle, minimum width=3em, line width=1pt] at (0, -1) (M) {Rd8};
     \node[draw, circle, minimum width=3em, line width=1pt] at (6, 0) (Q) {+0.743}; 
 
-    \only<1> {
+    \only<1|handout:0> {
 
         \node[draw, minimum width=3em, line width=1pt, text width=4em, align=center] at (3, 0) (LT) {Lookup table};
         \path [line] ([xshift=-4pt]B.east) to (LT.west);
@@ -204,13 +204,13 @@ The point about testing vs. training is a little tricky...
 \end{itemize}
 \column{0.5\textwidth}
     \begin{center}
-    \only<1>{
+    \only<1|handout:0>{
         \includegraphics[width = \textwidth]{figures/chess.jpg}
     }
-    \only<2>{
+    \only<2|handout:0>{
         \includegraphics[width = \textwidth]{figures/citystreet.jpg}
     }
-    \only<3->{
+    \only<3>{
         \includegraphics[width = \textwidth]{figures/googlemaps.png}
     }
     \end{center}
@@ -249,7 +249,7 @@ This highlights an important, but somewhat orthogonal distinction: \vspace{-1.5e
 \uncover<4->{There are tradeoffs!} 
 \begin{itemize}
     \item<5-> \textbf{On-policy:} Can be faster, can be more stable. 
-    \item<6-> \textbf{Off-policy:} Can learn from anything, even totally random play -- this makes learning by observation or incorporating more early exploration easier.
+    \item<6-> \textbf{Off-policy:} Can learn from anything, even totally random play -- incorporating more early exploration or replay easier.
 \end{itemize}
 \end{frame}
 

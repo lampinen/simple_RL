@@ -1,4 +1,4 @@
-\documentclass{beamer}
+\documentclass{beamer} %use [handout] to get summary]
 \usepackage{pgfpages}
 %\setbeameroption{show notes on second screen=left} %enable for notes
 \usepackage{graphicx}
@@ -76,17 +76,17 @@
 \begin{figure}
 \centering
 \begin{tikzpicture}[auto]
-    \uncover<1-4>{
+    \uncover<1-4|handout:0>{
         \node at (0, 0) (A) {Agent};
         \node at (0, -3) (E) {Environment};
     }
-    \uncover<2-4>{
+    \uncover<2-4|handout:0>{
         \path [arrow] (E.west) to [in=180,out=135] node [opacity=0.5, xshift=5pt, yshift=-25pt, text width=40pt] {\small perceives state of} (A.west); 
     }
-    \uncover<3-4>{
+    \uncover<3-4|handout:0>{
         \path [arrow] (A.south) to  node [opacity=0.5, text width=30pt] {\small acts on} (E.north); 
     }
-    \uncover<4>{
+    \uncover<4|handout:0>{
         \path [arrow] (E.east) to [in=0,out=45] node [opacity=0.5, xshift=50pt, text width=40pt] {\small rewards} (A.east); 
     }
     \uncover<5-> {
@@ -261,7 +261,7 @@ Questions?
 \end{itemize}
 \column{0.5\textwidth}
     \begin{center}
-    \only<1-2>{
+    \only<1-2|handout:0>{
         \includegraphics[width = \textwidth]{figures/chess.jpg}
     }
     \only<3->{
