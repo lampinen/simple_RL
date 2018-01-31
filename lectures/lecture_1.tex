@@ -1,4 +1,4 @@
-\documentclass{beamer} %use [handout] to get summary]
+\documentclass[handout]{beamer} %use [handout] to get summary]
 \usepackage{pgfpages}
 %\setbeameroption{show notes on second screen=left} %enable for notes
 \usepackage{graphicx}
@@ -198,7 +198,7 @@ Questions?
 \begin{frame}{Value functions} 
 \begin{itemize}
 \item A natural way to define ``best'' states is based on expected return (which we call \textbf{value}). 
-    \[V^\pi(s) = \E{\text{Return} \, |\, s} = \E{\sum_{t=1}^\infty \gamma^t r_t \, \bigg \vert \, s } \]
+    \[V^\pi(s) = \E{\text{Return} \, |\, s, \pi} = \E{\sum_{t=1}^\infty \gamma^t r_t \, \bigg \vert \, s, \pi } \]
 \item<2-> Expectation because this depends on the environment's transistions and rewards, which may be random.  
 \item<3-> But this also depends on the policy! (That's why it's \(V^{\color{red} \pi}\).) 
 \end{itemize}
@@ -209,7 +209,7 @@ Questions?
 \begin{itemize}
 \item Now we can define the \textbf{best} policy as the one that gets the \textbf{best} expected return from every state.
 \item<2-> We'll denote it by \(\pi^*\) and the associated value function by \(V^*\) or \(V^{\pi^*}\). 
-\item<3-> It is a theorem that any problem that can be specified as an MDP has at least one optimal policy.
+\item<3-> Any problem that can be specified as a finite MDP has at least one optimal policy.
 \item<4-> But how can we try to find \(\pi^*\) or \(V^*\)?
 \end{itemize}
 \end{frame}
@@ -232,7 +232,7 @@ Questions?
 \note{How do you think we do it? Well, sometimes you make a move, and then Magnus moves, and then you're like OH I DIDN'T SEE THAT MY POSITION IS MUCH WORSE THAN I THOUGHT.}
 \end{frame}
 
-\begin{frame}{TD Learning (applied to chess)}
+\begin{frame}{TD Learning}
 \begin{itemize}
     \item<1-> Temporal Difference (TD) learning is a formal framework for learning from surprises. 
     \item<2-> For \emph{any} value function, we should have that
@@ -241,7 +241,20 @@ Questions?
     \item<3-> So let's try to make this more true, 
         \[V^{\pi}(s_t) = V^{\pi}(s_t) + \alpha \underbrace{\left( r_{t+1} + \gamma V^{\pi}(s_{t+1}) - V(s_t)\right)}_{\text{prediction error!}}, \quad \alpha \in [0, 1]\]
     \item<4-> Iterating this is guaranteed to converge to the true value function for a policy (assuming MDP is finite).
+    \item<5-> Example: grid world.
 \end{itemize}
+\end{frame}
+
+\begin{frame}{TD Learning (applied to chess)}
+\begin{center}
+\uncover<3->{%
+    \includegraphics[width=0.3\textwidth]{figures/chess_prop_0.png}~
+}%
+\uncover<2->{%
+    \includegraphics[width=0.3\textwidth]{figures/simchess2.png}~
+}%
+\includegraphics[width=0.3\textwidth]{figures/chess_prop_2.png}
+\end{center}
 \end{frame}
 
 \begin{frame}{TD Learning (in the brain)}
@@ -278,7 +291,7 @@ Questions?
 \begin{frame}{Q-values}
 \begin{itemize}
 \item The solution we'll explore incorporates the action into our values by estimating the \emph{value of an action in a state}, which we'll denote by \(Q(s,a)\):
-    \[Q^\pi(s,a) = \E{\text{Return} \, |\, s, a} = \E{\sum_{t=1}^\infty \gamma^t r_t \, \bigg \vert \, s, a } \]
+    \[Q^\pi(s,a) = \E{\text{Return} \, |\, s, \pi, a} = \E{\sum_{t=1}^\infty \gamma^t r_t \, \bigg \vert \, s, \pi, a } \]
 \item<2-> Notice that this contains the value function from before:
     \[V^\pi(s) = \sum_{a \in A(s)} p(a | s, \pi) Q^{\pi} (s, a)\]
 \item<3-> But it also gives us ways of picking policies, e.g. pick the action with the highest \(Q\).
@@ -293,6 +306,7 @@ Questions?
         {\small
         \[Q^{\pi}(s_{t}, a_t) = Q^{\pi}(s_t. a_t) + \alpha \underbrace{\left( \left[ r_{t+1} + \max_{a'} \gamma Q^{\pi}(s_{t+1}, a') \right] - Q(s_t, a_t)\right)}_{\text{prediction error!}}\]}
     \item<3-> Almost surely converges to \(Q^*\) (and by extension \(\pi^*\)), as long as MDP is finite and each state, action pair is visited``enough.'' 
+    \item<4-> Example: grid world.
 \end{itemize}
 \end{frame}
 
