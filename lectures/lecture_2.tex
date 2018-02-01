@@ -61,11 +61,13 @@ Talk about all the stuff that makes it messy:
     \includegraphics[width=0.3\textwidth]{figures/selfdrivingcar.jpg}~
     \includegraphics[width=0.3\textwidth]{figures/playingchess.jpg}
 \end{center}
+\vspace{-1em}
 \begin{itemize}
-    \item<2-> Infinite spaces \& approximations.
+    \item<2-> Infinite spaces, approximation \& generalization.
     \item<3-> Correlations \& replay.
     \item<4-> Exploration \& on/off-policy learning.
-    \item<5-> Unobservables \& POMDPs, different assumptions and other approaches.
+    \item<5-> Hierarchies \& plans.
+    \item<6-> Unobservables \& POMDPs, different assumptions and other approaches.
 \end{itemize}
 \end{frame}
 
@@ -73,8 +75,8 @@ Talk about all the stuff that makes it messy:
 
 \begin{frame}{Similarities \& dissimilarities}
 \begin{itemize}
-    \item More state, action pairs in chess than atoms in observable universe. 
-    \item<2-> However... 
+    \item Wheels of car can be at infinitely many angles, but is 0.55 radians really that different from 0.56?
+    \item<2-> More state, action pairs in chess than atoms in observable universe. However: \vspace{0.5em} 
     \begin{center}
         \includegraphics[width=0.25\textwidth]{figures/simchess4.png}~
         \includegraphics[width=0.25\textwidth]{figures/simchess3.png} \\[5pt]
@@ -151,7 +153,7 @@ The Atari game-playing paper addressed this with \textbf{experience replay}:
     \item<2-> instead of  
          {
           \[\Delta Q^{\pi}(s_{t}, a_t) = \alpha \underbrace{\left( \left[ r_{t+1} + \max_{a'} \gamma Q^{\pi}(s_{t+1}, a') \right] - Q(s_t, a_t)\right)}_{\text{prediction error!}}\]}%
-        we sample a random experience from our buffer and update with that: \(k \sim Unif(\text{replay buffer indices})\) 
+    \item<3-> we sample a random experience from our buffer and update with that: \(k \sim Unif(\text{replay buffer indices})\) 
          {
           \[\Delta Q^{\pi}(s_{k}, a_k) = \alpha \underbrace{\left( \left[ r_{k+1} + \max_{a'} \gamma Q^{\pi}(s_{k+1}, a') \right] - Q(s_k, a_k)\right)}_{\text{prediction error!}}\]}
 
@@ -190,6 +192,7 @@ There is a \emph{fundamental} trade-off between exploring and exploiting:
         \item Act mostly randomly and explore a lot early in training.
         \item Act mostly greedily and exploit a lot late in training/in testing.
         \end{itemize}
+    \item<5-> (There are other possibilities, e.g. using a softmax over Q values.)
 \end{itemize}
 \end{frame}
 
@@ -249,25 +252,61 @@ This highlights an important, but somewhat orthogonal distinction: \vspace{-1.5e
 \uncover<4->{There are tradeoffs!} 
 \begin{itemize}
     \item<5-> \textbf{On-policy:} Can be faster, can be more stable. 
-    \item<6-> \textbf{Off-policy:} Can learn from anything, even totally random play -- incorporating more early exploration or replay easier.
+    \item<6-> \textbf{Off-policy:} Can learn from anything, even totally random play. This makes incorporating replay or changing \(\epsilon\) for more early exploration easier.
 \end{itemize}
 \end{frame}
 
-\section{Wrapping up}
+\section{Hierarchies \& plans}
+\begin{frame}{Plans = hierarchies of actions}
+\begin{figure}
+\centering
+\begin{tikzpicture}
+\node[draw, line width=1pt] at (0, 0) (A) {Excercise to stay healthy};
+\only<2->{
+    \node[draw, minimum width=3em, line width=1pt] at (0, -1) (B) {Run the dish today};
+    \path [arrow] (A.south) to (B.north);
+}
 
-\begin{frame}{Summary}
+\only<3->{
+    \node[draw, minimum width=3em,text width = 2.5cm, line width=1pt] at (0, -2.5) (C) {Put on running clothes};
+    \path [arrow] (B.south) to (C.north);
+}
+\only<4->{
+    \node[draw, minimum width=3em,text width = 2.5cm, line width=1pt] at (3, -2.5) (D) {Leave the house};
+    \path [arrow] (B.south east) to (D.north);
+}
+\only<5->{
+    \node[draw, minimum width=3em,text width = 2.5cm, line width=1pt] at (3, -4.25) (E) {Open front door};
+    \path [arrow] (D.south) to (E.north);
+}
+\only<6->{
+    \node[draw, minimum width=3em, text width = 2.5cm, line width=1pt] at (6, -4.25) (F) {step out the door};
+    \path [arrow] (D.south east) to (F.north);
+}
+\only<5->{
+    \node[draw, minimum width=3em,text width = 2.5cm, line width=1pt] at (3, -6) (G) {Grasp doorknob};
+    \path [arrow] (E.south) to (G.north);
+}
+\only<6->{
+    \node[draw, minimum width=3em, text width = 2.5cm, line width=1pt] at (6, -6) (H) {Turn doorknob};
+    \path [arrow] (E.south east) to (H.north);
+}
+
+\end{tikzpicture}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Hierarchies of Q-learning?} 
 \begin{itemize}
-\item We have an \textbf{agent} that takes \textbf{actions} in \textbf{states}. 
-\item<2-> These actions are chosen according to a \textbf{policy}, sometimes derived from some sort of \textbf{value function}. 
-\item<3-> We evaluated on \textbf{expected discounted rewards.}
-\item<4-> The \textbf{discount} reflects how future-oriented we are.
-\item<5-> \(Q^\pi(s,a)\) is the expected return of \(a\) in \(s\) under \(\pi\).
-\item<6-> We can learn \(Q\) values by \textbf{TD learning} (surprise).
-\item<7-> Can approximate \(Q\) using deep learning (for generalization). 
-\item<8-> There's a trade-off between \textbf{exploring} and \textbf{exploiting}!
-\item<9-> ... and there's way more to RL than will fit on one slide or one course.
+\item You could think of doing Q-learning at each level, where state includes states of the above levels (including their goals and current higher-level actions, etc).
+\item<2-> But how do you figure out what the higher level actions should be?
+\item<3-> Still an open problem (though there is work on it), and potentially a good project is to think about how some aspect of behavior could be explained this way, and what assumptions you would need to make it work!
+
 \end{itemize}
 \end{frame}
+
+
+\section{Other approaches}
 
 \begin{frame}{Other approaches}
 Many other approaches:
@@ -284,6 +323,22 @@ Many other approaches:
     \item<8-> And much more.
 \end{itemize}
 \note{This is a huge field, Stanford has (several) whole graduate class just on RL, much more to be explored}
+\end{frame}
+
+\section{Wrapping up}
+
+\begin{frame}{Summary}
+\begin{itemize}
+\item We have an \textbf{agent} that takes \textbf{actions} in \textbf{states}. 
+\item<2-> These actions are chosen according to a \textbf{policy}, sometimes derived from some sort of \textbf{value function}. 
+\item<3-> We evaluated on \textbf{expected discounted rewards.}
+\item<4-> The \textbf{discount} reflects how future-oriented we are.
+\item<5-> \(Q^\pi(s,a)\) is the expected return of \(a\) in \(s\) under \(\pi\).
+\item<6-> We can learn \(Q\) values by \textbf{TD learning} (surprise).
+\item<7-> Can approximate \(Q\) using deep learning (for generalization). 
+\item<8-> There's a trade-off between \textbf{exploring} and \textbf{exploiting}!
+\item<9-> ... and there's way more to RL than will fit on one slide or one course.
+\end{itemize}
 \end{frame}
 
 
