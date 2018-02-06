@@ -67,7 +67,8 @@ Talk about all the stuff that makes it messy:
     \item<3-> Correlations \& replay.
     \item<4-> Exploration \& on/off-policy learning.
     \item<5-> Hierarchies \& plans.
-    \item<6-> Unobservables \& POMDPs, different assumptions and other approaches.
+    \item<6-> Other types of feedback.
+    \item<7-> Unobservables \& POMDPs, different assumptions and other approaches.
 \end{itemize}
 \end{frame}
 
@@ -305,6 +306,28 @@ This highlights an important, but somewhat orthogonal distinction: \vspace{-1.5e
 \end{itemize}
 \end{frame}
 
+\section{Other types of feedback}
+
+\begin{frame}{Auxiliary tasks} 
+\begin{columns}
+\column{0.5\textwidth}
+\begin{itemize}
+    \item<1-> Actually, we might get other forms of feedback... Can we incorporate these?
+    \item<2-> Short answer: yes.
+    \item<3-> May help with picking up on longer-term structure.
+    \item<4-> Or with building relevant prior knowledge.
+\end{itemize}
+\column{0.5\textwidth}
+    \begin{center}
+        \only<1-3|handout:0>{
+            \includegraphics[width = \textwidth]{figures/chess.jpg}
+        }
+        \only<4>{
+            \includegraphics[width = \textwidth]{figures/Montezumas_Revenge.png}
+        }
+    \end{center}
+\end{columns}
+\end{frame}
 
 \section{Other approaches}
 
