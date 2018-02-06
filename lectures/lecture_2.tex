@@ -262,32 +262,32 @@ This highlights an important, but somewhat orthogonal distinction: \vspace{-1.5e
 \centering
 \begin{tikzpicture}
 \node[draw, line width=1pt] at (0, 0) (A) {Excercise to stay healthy};
-\only<2->{
+\uncover<2->{
     \node[draw, minimum width=3em, line width=1pt] at (0, -1) (B) {Run the dish today};
     \path [arrow] (A.south) to (B.north);
 }
 
-\only<3->{
+\uncover<3->{
     \node[draw, minimum width=3em,text width = 2.5cm, line width=1pt] at (0, -2.5) (C) {Put on running clothes};
     \path [arrow] (B.south) to (C.north);
 }
-\only<4->{
+\uncover<4->{
     \node[draw, minimum width=3em,text width = 2.5cm, line width=1pt] at (3, -2.5) (D) {Leave the house};
     \path [arrow] (B.south east) to (D.north);
 }
-\only<5->{
+\uncover<5->{
     \node[draw, minimum width=3em,text width = 2.5cm, line width=1pt] at (3, -4.25) (E) {Open front door};
     \path [arrow] (D.south) to (E.north);
 }
-\only<6->{
+\uncover<8->{
     \node[draw, minimum width=3em, text width = 2.5cm, line width=1pt] at (6, -4.25) (F) {step out the door};
     \path [arrow] (D.south east) to (F.north);
 }
-\only<5->{
+\uncover<6->{
     \node[draw, minimum width=3em,text width = 2.5cm, line width=1pt] at (3, -6) (G) {Grasp doorknob};
     \path [arrow] (E.south) to (G.north);
 }
-\only<6->{
+\uncover<7->{
     \node[draw, minimum width=3em, text width = 2.5cm, line width=1pt] at (6, -6) (H) {Turn doorknob};
     \path [arrow] (E.south east) to (H.north);
 }
