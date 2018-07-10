@@ -238,8 +238,8 @@ Questions?
     \item<2-> For \emph{any} value function, we should have that
         \[V^{\pi}(s_{t}) = r_{t+1} + \gamma V^{\pi}(s_{t+1})\] 
         (This is often called the \textbf{Bellman Equation}.)
-    \item<3-> So let's try to make this more true, 
-        \[V^{\pi}(s_t) = V^{\pi}(s_t) + \alpha \underbrace{\left( r_{t+1} + \gamma V^{\pi}(s_{t+1}) - V(s_t)\right)}_{\text{prediction error!}}, \quad \alpha \in [0, 1]\]
+    \item<3-> So let's try to make this more true by updating: 
+        \[V^{\pi}(s_t) \leftarrow V^{\pi}(s_t) + \alpha \underbrace{\left( r_{t+1} + \gamma V^{\pi}(s_{t+1}) - V(s_t)\right)}_{\text{prediction error!}}, \quad \alpha \in [0, 1]\]
     \item<4-> Iterating this is guaranteed to converge to the true value function for a policy (assuming MDP is finite).
     \item<5-> Example: grid world.
 \end{itemize}
@@ -302,9 +302,9 @@ Questions?
 \begin{itemize}
     \item<1-> Using TD learning, we have another Bellman equation:
         \[Q^{\pi}\left(s_{t}, a_t\right) = r_{t+1} + \gamma \max_{a'} Q^{\pi}\left(s_{t+1}, a'\right) \] 
-    \item<2-> So let's try to make this more true, 
+    \item<2-> So let's try to make this more true by updating: 
         {\small
-        \[Q^{\pi}(s_{t}, a_t) = Q^{\pi}(s_t. a_t) + \alpha \underbrace{\left( \left[ r_{t+1} + \max_{a'} \gamma Q^{\pi}(s_{t+1}, a') \right] - Q(s_t, a_t)\right)}_{\text{prediction error!}}\]}
+        \[Q^{\pi}(s_{t}, a_t) \leftarrow Q^{\pi}(s_t. a_t) + \alpha \underbrace{\left( \left[ r_{t+1} + \max_{a'} \gamma Q^{\pi}(s_{t+1}, a') \right] - Q(s_t, a_t)\right)}_{\text{prediction error!}}\]}
     \item<3-> Almost surely converges to \(Q^*\) (and by extension \(\pi^*\)), as long as MDP is finite and each state, action pair is visited``enough.'' 
     \item<4-> Example: grid world.
 \end{itemize}

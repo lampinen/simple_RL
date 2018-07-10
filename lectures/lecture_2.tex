@@ -153,10 +153,11 @@ The Atari game-playing paper addressed this with \textbf{experience replay}:
     \item Whenever we experience a new \((s_t, a_t, r_{t+1}, s_{t+1})\) tuple, stick it in a buffer.
     \item<2-> instead of  
          {
-          \[\Delta Q^{\pi}(s_{t}, a_t) = \alpha \underbrace{\left( \left[ r_{t+1} + \max_{a'} \gamma Q^{\pi}(s_{t+1}, a') \right] - Q(s_t, a_t)\right)}_{\text{prediction error!}}\]}%
+          \[L = \left(r_{t+1} + \gamma \max_{a'} Q(s_{t+1}, a'; \theta_i^{-}) - Q(s_{t}, a_t; \theta_i)\right)^2\]}
     \item<3-> we sample a random experience from our buffer and update with that: \(k \sim Unif(\text{replay buffer indices})\) 
          {
-          \[\Delta Q^{\pi}(s_{k}, a_k) = \alpha \underbrace{\left( \left[ r_{k+1} + \max_{a'} \gamma Q^{\pi}(s_{k+1}, a') \right] - Q(s_k, a_k)\right)}_{\text{prediction error!}}\]}
+          \[L = \left(r_{k+1} + \gamma \max_{a'} Q(s_{k+1}, a'; \theta_i^{-}) - Q(s_{k}, a_k; \theta_i)\right)^2\]}
+    \item<4-> ... and potentially replay many experience for each real world time step.
 
 
 \end{itemize}
